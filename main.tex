@@ -46,7 +46,7 @@
 
 \section{Introducere}
 
-Bine ați venit la laboratorul de baze de date! În ziua de azi, datele sunt peste tot în jurul nostru, iar acest lucru este cu atât mai adevărat pentru oamenii de știință, care lucrează cu seturi mari de date (\textit{Big Data}). Sistemele informatice trebuie proiectate și dezvoltate pentru a putea gestiona aceste cantități mari de date și pentru a extrage informații utile din ele.
+Bine ați venit la laboratorul de baze de date! În ziua de azi, datele sunt esențiale pentru multe ocupații, iar acest lucru este cu atât mai adevărat pentru oamenii de știință, care lucrează cu seturi mari de date (\textit{Big Data}). Sistemele informatice trebuie proiectate și dezvoltate pentru a putea gestiona aceste cantități mari de date și pentru a extrage informații utile din ele.
 
 În cadrul acestor laboratoare, vom dobândi experiență practică cu câteva tipuri diferite de baze de date: relaționale (\textit{relational}), vectoriale (\textit{vector DB}), pentru serii de timp (\textit{time series}). Vom lucra cu mai multe sisteme moderne de gestiune a bazelor de date: \href{https://www.postgresql.org/}{PostgreSQL}, \href{https://redis.io/}{Redis}, \href{https://www.influxdata.com/}{InfluxDB} și posibil altele.
 
@@ -54,13 +54,32 @@ Bine ați venit la laboratorul de baze de date! În ziua de azi, datele sunt pes
 
 Dacă ați scris până acum programe care lucrează cu fișiere pe disc, ați văzut că procesul poate fi destul de complicat: trebuie deschis fișierul, trebuie găsit rândul / poziția care ne interesează, trebuie să citim informațiile în formatul corect (e.g.~numere întregi, numere reale, șiruri de caractere, bytes etc).
 
-În practică, apar probleme și mai complicate: cum putem citi și prelucra un fișier în paralel (pe mai multe \textit{core}-uri)? Ce se întâmplă dacă mai multe programe vor să modifice un fișier în același timp? Cum putem face copii de siguranță sau cum putem avea un istoric al modificărilor?
+În practică, apar probleme și mai complicate: cum putem citi și prelucra un fișier în paralel (pe mai multe procesoare)? Ce se întâmplă dacă mai multe programe vor să modifice un fișier în același timp? Cum putem face copii de siguranță sau cum putem avea un istoric al modificărilor?
 
 Sistemele de gestiune a bazelor de date (SGBD; în engleză, \textit{Database Management System}, DBMS) sunt aplicații specializate pentru stocarea diferitelor tipuri de date într-un mod eficient și sigur. De multe ori, acestea sunt instalate pe servere și sunt accesibile prin rețea.
 
-Modul în care funcționează aceste sisteme este dincolo de scopul cursului. Ne vom mulțumi să înțelegem cum le putem configura și cum le putem folosi în practică.
+Modul în care funcționează aceste sisteme în profunzime este dincolo de scopul cursului. Ne vom mulțumi să înțelegem cum le putem configura și cum le putem folosi în practică. Vom învăța atât cum să utilizăm seturi de date și resurse existente, cât și cum să proiectăm și să creăm propria noastră bază de date, prin intermediul unui DBMS existent.
+
+\subsection*{Cu ce fel de date lucrăm?}
+
+Pe parcursul carierei voastre, vă veți întâlni cu tot felul de date:
+
+\begin{itemize}
+    \item \textbf{Tabulare:} fișiere cu date separate prin virgulă (\textit{comma-separated values}, CSV) sau prin spații (\textit{tab-separated values}, TSV); conțin mai multe \emph{rânduri}, fiecare având valori pentru un set comun de \emph{coloane}.
+    \item \textbf{Tablouri multidimensionale:} vectori, matrici, tensori de rang înalt. Câteodată poartă și denumirea de \href{https://en.wikipedia.org/wiki/Data_cube}{\textit{data cube}} (în special seturile de date foarte mari).
+    \item \textbf{Serii de timp:} o înșiruire de măsurători / înregistrări, indexate după momentul efectuării lor. De obicei, măsurătorile sunt realizate periodic, la un interval fix (rata de eșantionare).
+    \item \textbf{Grafuri:} o colecție de \emph{noduri} și \emph{muchii} (sau \emph{arce}, în cazul grafurilor direcționate). Putem asocia măsurători cu fiecare nod sau fiecare muchie.
+    \item \textbf{Vectori:} datele sunt reprezentate de vectori într-un spațiu vectorial cu multe dimensiuni, în care vectorii ,,apropiați'' codifică obiecte cu proprietăți asemănătoare.
+\end{itemize}
 
 \subsection*{Care sunt principalele tipuri de baze de date?}
+
+
+\begin{itemize}
+    \item Relaționale
+    \item Serii de timp
+    \item Vectoriale
+\end{itemize}
 
 % TODO
 
@@ -68,7 +87,7 @@ Modul în care funcționează aceste sisteme este dincolo de scopul cursului. Ne
 
 Primul sistem de gestiune a bazelor de date cu care vom lucra este \href{https://www.postgresql.org/}{PostgreSQL}, un sistem \textit{open source} și gratuit. Este folosit predominant în modul relațional, dar există extensii (tot \textit{open source} și gratuite) care permit utilizarea lui pentru stocarea și prelucrarea \href{https://github.com/timescale/timescaledb}{seriilor de timp} sau a \href{https://github.com/pgvector/pgvector}{datelor vectoriale}.
 
-Recomandarea mea este să folosiți o instanță containerizată, pentru a evita complexitățile instalării PostgreSQL pe sistemul vostru și pentru a putea mult mai ușor să resetați baza de date (în caz că o stricați \emoji{slightly-smiling-face}).
+Recomandarea mea este să folosiți o instanță containerizată, pentru a evita complexitățile instalării PostgreSQL pe sistemul vostru și pentru a putea mult mai ușor să resetați baza de date; (în caz că o stricați \emoji{slightly-smiling-face}).
 
 \subsection{Containerizat}
 
