@@ -6,8 +6,21 @@
 % Custom font (TeX Gyre Schola)
 \setmainfont{TeX Gyre Schola}
 
+% Customize page geometry
+\usepackage[a4paper, total={6in, 8in}]{geometry}
+
 % Custom page headers
 \usepackage{fancyhdr}
+
+% Support for inserting emojis
+\usepackage{emoji}
+
+% Suuport for interactive hyperlinks
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks,
+    urlcolor=blue
+}
 
 % Document metadata
 \title{Baze de date}
@@ -18,9 +31,6 @@
 
 % \maketitle
 
-% {\large \textbf{Laboratorul 1}}
-\section*{Laboratorul 1}
-
 % Set this page's style to `fancy`
 \pagestyle{fancy}
 
@@ -29,6 +39,47 @@
 \fancyhead[LO]{Gabriel Majeri, Petre Boboc}
 \fancyhead[RO]{\textbf{Baze de date}}
 
+% {\large \textbf{Laboratorul 1}}
+\section*{Laboratorul 1}
+
 \textbf{Obiectiv.} Să înțelegem conceptele de bază referitoare la stocarea datelor pe calculator, să descoperim principalele tipuri de sisteme de gestiune a bazelor de date, să ne configurăm mediul de lucru local și să începem să ne familiarizăm cu limbajul SQL.
+
+\section{Introducere}
+
+Bine ați venit la laboratorul de baze de date! În ziua de azi, datele sunt peste tot în jurul nostru, iar acest lucru este cu atât mai adevărat pentru oamenii de știință, care lucrează cu seturi mari de date (\textit{Big Data}). Sistemele informatice trebuie proiectate și dezvoltate pentru a putea gestiona aceste cantități mari de date și pentru a extrage informații utile din ele.
+
+În cadrul acestor laboratoare, vom dobândi experiență practică cu câteva tipuri diferite de baze de date: relaționale (\textit{relational}), vectoriale (\textit{vector DB}), pentru serii de timp (\textit{time series}). Vom lucra cu mai multe sisteme moderne de gestiune a bazelor de date: \href{https://www.postgresql.org/}{PostgreSQL}, \href{https://redis.io/}{Redis}, \href{https://www.influxdata.com/}{InfluxDB} și posibil altele.
+
+\subsection*{De ce avem nevoie de o bază de date?}
+
+Dacă ați scris până acum programe care lucrează cu fișiere pe disc, ați văzut că procesul poate fi destul de complicat: trebuie deschis fișierul, trebuie găsit rândul / poziția care ne interesează, trebuie să citim informațiile în formatul corect (e.g.~numere întregi, numere reale, șiruri de caractere, bytes etc).
+
+În practică, apar probleme și mai complicate: cum putem citi și prelucra un fișier în paralel (pe mai multe \textit{core}-uri)? Ce se întâmplă dacă mai multe programe vor să modifice un fișier în același timp? Cum putem face copii de siguranță sau cum putem avea un istoric al modificărilor?
+
+Sistemele de gestiune a bazelor de date (SGBD; în engleză, \textit{Database Management System}, DBMS) sunt aplicații specializate pentru stocarea diferitelor tipuri de date într-un mod eficient și sigur. De multe ori, acestea sunt instalate pe servere și sunt accesibile prin rețea.
+
+Modul în care funcționează aceste sisteme este dincolo de scopul cursului. Ne vom mulțumi să înțelegem cum le putem configura și cum le putem folosi în practică.
+
+\subsection*{Care sunt principalele tipuri de baze de date?}
+
+% TODO
+
+\section{Configurarea mediului de lucru}
+
+Primul sistem de gestiune a bazelor de date cu care vom lucra este \href{https://www.postgresql.org/}{PostgreSQL}, un sistem \textit{open source} și gratuit. Este folosit predominant în modul relațional, dar există extensii (tot \textit{open source} și gratuite) care permit utilizarea lui pentru stocarea și prelucrarea \href{https://github.com/timescale/timescaledb}{seriilor de timp} sau a \href{https://github.com/pgvector/pgvector}{datelor vectoriale}.
+
+Recomandarea mea este să folosiți o instanță containerizată, pentru a evita complexitățile instalării PostgreSQL pe sistemul vostru și pentru a putea mult mai ușor să resetați baza de date (în caz că o stricați \emoji{slightly-smiling-face}).
+
+\subsection{Containerizat}
+
+% TODO
+
+\subsection{Instalat local}
+
+% TODO
+
+\section{Exerciții}
+
+% TODO
 
 \end{document}
