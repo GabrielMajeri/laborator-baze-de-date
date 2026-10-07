@@ -1,0 +1,15 @@
+[project]
+name = "laborator-baze-de-date"
+version = "0.1.0"
+description = "Materiale pentru laboratorul de baze de date de la Facultatea de Fizică, Universitatea din București"
+readme = "README.md"
+authors = [
+    { name = "Gabriel Majeri", email = "gabriel.majeri6@gmail.com" }
+]
+requires-python = ">=3.14"
+dependencies = []
+
+[dependency-groups]
+dev = [
+    "zensical>=0.0.68",
+]
