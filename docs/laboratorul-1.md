@@ -8,7 +8,7 @@
 
 Bine ați venit la laboratorul de baze de date! În ziua de azi, datele sunt esențiale pentru multe locuri de muncă, iar acest lucru este cu atât mai adevărat pentru oamenii de știință, care lucrează cu seturi mari de date (*Big Data*). Sistemele informatice trebuie proiectate și dezvoltate pentru a putea gestiona aceste cantități mari de date și pentru a extrage informații utile din ele.
 
-În cadrul acestor laboratoare, vom dobândi experiență practică cu câteva tipuri diferite de baze de date: relaționale (*relational*), vectoriale (*vector DB*), pentru serii de timp (*time series*), cheie-valoare (*key-value store*) etc. Se face de obicei distincția între bazele de date relaționale, care folosesc *limbajul de interogare structurat* (*Structured Query Language* — [SQL](https://en.wikipedia.org/wiki/SQL)) pentru a accesa și gestiona datele, respectiv cele nerelaționale, denumite uzual [NoSQL](https://en.wikipedia.org/wiki/NoSQL), care tind să aibă interfețe specifice.
+În cadrul acestor laboratoare, vom dobândi experiență practică cu câteva tipuri diferite de baze de date: relaționale (*relational*), vectoriale (*vector DB*), pentru serii de timp (*time series*), cheie-valoare (*key-value store*) etc. Se face de obicei distincția între bazele de date relaționale, care folosesc *limbajul de interogare structurat* (*Structured Query Language* &mdash; [SQL](https://en.wikipedia.org/wiki/SQL)) pentru a accesa și gestiona datele, respectiv cele nerelaționale, denumite uzual [NoSQL](https://en.wikipedia.org/wiki/NoSQL), care tind să aibă interfețe specifice.
 
 Vom lucra cu mai multe sisteme moderne de gestiune a bazelor de date: [PostgreSQL](https://www.postgresql.org/), [MongoDB](https://www.mongodb.com/), [Redis](https://redis.io/), [InfluxDB](https://www.influxdata.com/) și posibil altele. Scopul este să ne familiarizăm cu uneltele disponibile, să învățăm ce avantaje și dezavantaje au fiecare și cum să alegem sistemul potrivit pentru datele noastre.
 
@@ -28,7 +28,7 @@ Pe parcursul carierei voastre, vă veți întâlni cu tot felul de date:
 
 - **Tabulare:** fișiere cu date separate prin virgulă (*comma-separated values*, CSV) sau prin spații (*tab-separated values*, TSV); conțin mai multe *rânduri*, fiecare având valori pentru un set comun de *coloane*.
 - **Vectori:** datele sunt reprezentate de vectori într-un spațiu vectorial cu multe dimensiuni, în care vectorii „apropiați” codifică obiecte cu proprietăți asemănătoare.
-- **Geospațiale:** locații geografice (puncte reprezentate prin latitudine și longitudine), zone pe hartă, proiecții, geometrii/corpuri 3D etc. Se încadrează în conceptul de [Geographic Information System](https://en.wikipedia.org/wiki/Geographic_information_system) — GIS.
+- **Geospațiale:** locații geografice (puncte reprezentate prin latitudine și longitudine), zone pe hartă, proiecții, geometrii/corpuri 3D etc. Se încadrează în conceptul de [Geographic Information System](https://en.wikipedia.org/wiki/Geographic_information_system) (GIS).
 - **Tablouri multidimensionale:** vectori, matrici, tensori de rang înalt. Câteodată poartă și denumirea de [*data cube*](https://en.wikipedia.org/wiki/Data_cube) (în special seturile de date foarte mari).
 - **Serii de timp:** o înșiruire de măsurători / înregistrări, indexate după momentul efectuării lor. De obicei, măsurătorile sunt realizate periodic, la un interval fix (rata de eșantionare).
 - **Grafuri:** o colecție de *noduri* și *muchii* (sau *arce*, în cazul grafurilor direcționate). Putem asocia măsurători cu fiecare nod sau fiecare muchie.
@@ -39,11 +39,11 @@ Acestea sunt doar câteva exemple de moduri în care pot fi reprezentate datele.
 
 În funcție de natura datelor pe care vrem să le stocăm, sistemele de gestiune a bazelor de date se pot clasifica în:
 
-- **Relaționale** — [PostgreSQL](https://www.postgresql.org/), [MySQL](https://www.mysql.com/), [MariaDB](https://mariadb.org/), [SQLite](https://sqlite.org/index.html), [Microsoft SQL Server](https://www.microsoft.com/en/sql-server), [Oracle SQL](https://en.wikipedia.org/wiki/Oracle_Database), [IBM Db2](https://www.ibm.com/products/db2)
-- **Orientate pe documente** — [MongoDB](https://www.mongodb.com/), [CouchDB](https://couchdb.apache.org/), [ElasticSearch](https://www.elastic.co/elasticsearch/), [Solr](https://solr.apache.org/)
-- **Pentru serii de timp** — [InfluxDB](https://www.influxdata.com/), [TimescaleDB](https://github.com/timescale/timescaledb), [ClickHouse](https://clickhouse.com/), [Prometheus](https://prometheus.io/)
-- **Vectoriale** — [Redis](https://redis.io/), [Qdrant](https://qdrant.tech/), [Weaviate](https://weaviate.io/)
-- **Grafuri** — [Neo4j](https://neo4j.com/)
+- **Relaționale** &mdash; [PostgreSQL](https://www.postgresql.org/), [MySQL](https://www.mysql.com/), [MariaDB](https://mariadb.org/), [SQLite](https://sqlite.org/index.html), [Microsoft SQL Server](https://www.microsoft.com/en/sql-server), [Oracle SQL](https://en.wikipedia.org/wiki/Oracle_Database), [IBM Db2](https://www.ibm.com/products/db2)
+- **Orientate pe documente** &mdash; [MongoDB](https://www.mongodb.com/), [CouchDB](https://couchdb.apache.org/), [ElasticSearch](https://www.elastic.co/elasticsearch/), [Solr](https://solr.apache.org/)
+- **Pentru serii de timp** &mdash; [InfluxDB](https://www.influxdata.com/), [TimescaleDB](https://github.com/timescale/timescaledb), [ClickHouse](https://clickhouse.com/), [Prometheus](https://prometheus.io/)
+- **Vectoriale** &mdash; [Redis](https://redis.io/), [Qdrant](https://qdrant.tech/), [Weaviate](https://weaviate.io/)
+- **Grafuri** &mdash; [Neo4j](https://neo4j.com/)
 
 Fiecare sistem de gestiune a bazelor de date este optimizat pentru lucrul cu un anumit tip de date. Unele sunt suficient de flexibile pentru a acoperi mai multe tipuri de date în aceeași bază de date (de exemplu, MongoDB poate gestiona atât documente cât și vectori; PostgreSQL are extensii care îi permit să îmbine date relaționale, serii de timp și vectoriale).
 
@@ -152,7 +152,7 @@ Pe Windows sau macOS va trebui să folosiți interfața grafică sau interfața 
 
 ## Conectarea la baza de date
 
-Acum că ați reușit să instalați și să porniți o instanță de PostgreSQL, trebuie să ne conectăm la ea pentru a putea începe să o folosim. La fel ca majoritatea sistemelor de gestiune a bazelor de date, Postgres adoptă [o arhitectură client–server](https://en.wikipedia.org/wiki/Client%E2%80%93server_model): sistemul acționează ca un server care oferă acces securizat prin rețea clienților (aplicațiilor).
+Acum că ați reușit să instalați și să porniți o instanță de PostgreSQL, trebuie să ne conectăm la ea pentru a putea începe să o folosim. La fel ca majoritatea sistemelor de gestiune a bazelor de date, Postgres adoptă [o arhitectură client&ndash;server](https://en.wikipedia.org/wiki/Client%E2%80%93server_model): sistemul acționează ca un server care oferă acces securizat prin rețea clienților (aplicațiilor).
 
 Există diferite moduri de a accesa baza de date, iar mai jos vom discuta despre câteva variante.
 
@@ -225,9 +225,69 @@ Altfel, urmați [instrucțiunile de instalare](https://www.pgadmin.org/download/
 
 După instalare, interfața web ar trebui să fie accesibilă din browser la adresa [`localhost:8080`](http://localhost:8080) (sau [`localhost:80`](http://localhost:80) dacă ați folosit-o pe cea din exemplul lor).
 
+Vă puteți autentifica folosind adresa de e-mail și parola din comanda de mai sus (e-mail address: `user@example.com`, password: `parola`). pgAdmin necesită autentificare deoarece poate fi folosit într-un mediu cu mai mulți utilizatori, pentru gestiunea mai multor servere de baze de date.
+
+<figure markdown="span">
+![pgAdmin - Pagina de pornire](images/pgadmin-setup-guide/landing-page.png)
+<figcaption>Prima pagină a interfeței pgAdmin</figcaption>
+</figure>
+
+După autentificare, o să ajungeți la panoul de administrare. Acum trebuie să configurăm conexiunea la baza de date PostgreSQL configurată anterior.
+
+<figure markdown="span">
+![pgAdmin - Panou de control](images/pgadmin-setup-guide/dashboard.png)
+<figcaption>Panoul de control al pgAdmin</figcaption>
+</figure>
+
+Pe tab-ul `General`, setați un nume pentru noua conexiune. Pe tab-ul `Connection`, completați informațiile de conectare. Dacă folosiți pgAdmin containerizat, adresa la care trebuie să vă conectați este `host.containers.internal` (echivalent cu `localhost` pe calculatorul vostru). Pentru pgAdmin și PostgreSQL instalate local, puteți folosi direct `localhost`. În ambele cazuri, port-ul este `5432`, username-ul este `postgres`, iar parola este `parola` (sau ce parolă ați setat voi la instalare).
+
+<figure markdown="span">
+![pgAdmin - Conexiune la baza de date](images/pgadmin-setup-guide/connection-settings.png)
+<figcaption>Configurarea conexiunii la baza de date în pgAdmin</figcaption>
+</figure>
+
+Dacă ați configurat totul cum trebuie și ați salvat configurația, o să vi se deschidă o pagină cu informații despre serverul de baze de date la care v-ați conectat.
+
+<figure markdown="span">
+![pgAdmin - Informații despre server-ul de baze de date](images/pgadmin-setup-guide/database-page.png)
+<figcaption>Informații despre server-ul de baze de date</figcaption>
+</figure>
+
+Pentru a putea executa comenzi în primele laboratoare, va trebui să folosiți interfața de *Query Tool* din pgAdmin. O puteți accesa selectând al doilea buton din panoul lateral din stânga. Selectați server-ul existent pe care l-ați adăugat anterior și (dacă este nevoie) introduceți din nou parola server-ului.
+
+<figure markdown="span">
+![pgAdmin - Query Tool](images/pgadmin-setup-guide/query-tool.png)
+<figcaption>Pagina de activare a Query Tool</figcaption>
+</figure>
+
+În noua interfață care se deschide, puteți introduce comenzi SQL și le puteți executa. Rezultatele vor fi afișate în partea de jos a ferestrei.
+
+<figure markdown="span">
+![pgAdmin - Interfața de Query Tool](images/pgadmin-setup-guide/query-tool-results.png)
+<figcaption>Interfața de Query Tool din pgAdmin</figcaption>
+</figure>
+
+Încercați să rulați și în acest caz comanda `SELECT version();` pentru a vedea versiunea server-ului de baze de date la care v-ați conectat.
+
 ### Interfață grafică: DataGrip
 
-DataGrip este gratuit pentru utilizare necomercială sau pentru studenți.
+[DataGrip](https://www.jetbrains.com/datagrip/) este un IDE (*Integrated Development Environment*) pentru baze de date, dezvoltat de compania [JetBrains](https://www.jetbrains.com/). Este o aplicație comercială, dar oferă o perioadă de probă gratuită de 30 de zile. De asemenea, este gratuită pentru studenți și pentru utilizare necomercială.
+
+Puteți descărca și instala DataGrip urmând [instrucțiunile de pe site-ul oficial](https://www.jetbrains.com/datagrip/download/). După ce o deschideți, creați un nou proiect pentru laborator și configurați conexiunea, la fel cum am făcut pentru pgAdmin:
+
+<figure markdown="span">
+![DataGrip - Configurarea sursei de date](images/datagrip-setup-guide/data-source-config.png)
+<figcaption>Configurarea sursei de date pentru DataGrip</figcaption>
+</figure>
+
+După ce ați configurat și salvat sursa de date, puteți folosi interfața grafică pentru a explora baza de date și pentru a rula comenzi SQL:
+
+<figure markdown="span">
+![DataGrip - Consola de interogări](images/datagrip-setup-guide/query-console.png)
+<figcaption>Rularea unei interogări în DataGrip</figcaption>
+</figure>
+
+DataGrip oferă o mulțime de funcționalități avansate, cum ar fi completarea automată a codului, vizualizarea relațiilor dintre tabele și generarea de diagrame. Îl vom putea folosi și pentru alte tipuri de baze de date pe parcursul laboratorului, nu doar pentru cele relaționale, cum ar fi PostgreSQL.
 
 ## Exerciții
 
