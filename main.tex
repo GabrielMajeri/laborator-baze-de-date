@@ -15,12 +15,18 @@
 % Support for inserting emojis
 \usepackage{emoji}
 
-% Suuport for interactive hyperlinks
+% Support for colored text
+\usepackage{xcolor}
+
+% Support for interactive hyperlinks
 \usepackage{hyperref}
 \hypersetup{
     colorlinks,
     urlcolor=blue
 }
+
+% Code listings with syntax highlighting
+\usepackage{minted}
 
 % Document metadata
 \title{Baze de date}
@@ -42,15 +48,17 @@
 % {\large \textbf{Laboratorul 1}}
 \section*{Laboratorul 1}
 
-\textbf{Obiectiv.} Să înțelegem conceptele de bază referitoare la stocarea datelor pe calculator, să descoperim principalele tipuri de sisteme de gestiune a bazelor de date, să ne configurăm mediul de lucru local și să începem să ne familiarizăm cu limbajul SQL.
+\textbf{Obiective:} Să înțelegem conceptele de bază referitoare la stocarea datelor pe calculator, să descoperim principalele tipuri de sisteme de gestiune a bazelor de date, să ne configurăm mediul de lucru local și să începem să ne familiarizăm cu limbajul SQL.
 
 \section{Introducere}
 
-Bine ați venit la laboratorul de baze de date! În ziua de azi, datele sunt esențiale pentru multe ocupații, iar acest lucru este cu atât mai adevărat pentru oamenii de știință, care lucrează cu seturi mari de date (\textit{Big Data}). Sistemele informatice trebuie proiectate și dezvoltate pentru a putea gestiona aceste cantități mari de date și pentru a extrage informații utile din ele.
+Bine ați venit la laboratorul de baze de date! În ziua de azi, datele sunt esențiale pentru multe locuri de muncă, iar acest lucru este cu atât mai adevărat pentru oamenii de știință, care lucrează cu seturi mari de date (\textit{Big Data}). Sistemele informatice trebuie proiectate și dezvoltate pentru a putea gestiona aceste cantități mari de date și pentru a extrage informații utile din ele.
 
-În cadrul acestor laboratoare, vom dobândi experiență practică cu câteva tipuri diferite de baze de date: relaționale (\textit{relational}), vectoriale (\textit{vector DB}), pentru serii de timp (\textit{time series}). Vom lucra cu mai multe sisteme moderne de gestiune a bazelor de date: \href{https://www.postgresql.org/}{PostgreSQL}, \href{https://redis.io/}{Redis}, \href{https://www.influxdata.com/}{InfluxDB} și posibil altele.
+În cadrul acestor laboratoare, vom dobândi experiență practică cu câteva tipuri diferite de baze de date: relaționale (\textit{relational}), vectoriale (\textit{vector DB}), pentru serii de timp (\textit{time series}), cheie-valoare (\textit{key-value store}) etc. Se face de obicei distincția între bazele de date relaționale, care folosesc \emph{limbajul de interogare structurat} (\textit{Structured Query Language} --- \href{https://en.wikipedia.org/wiki/SQL}{SQL}) pentru a accesa și gestiona datele, respectiv cele nerelaționale, denumite uzual \href{https://en.wikipedia.org/wiki/NoSQL}{NoSQL}, care tind să aibă interfețe specifice.
 
-\subsection*{De ce avem nevoie de o bază de date?}
+Vom lucra cu mai multe sisteme moderne de gestiune a bazelor de date: \href{https://www.postgresql.org/}{PostgreSQL}, \href{https://www.mongodb.com/}{MongoDB}, \href{https://redis.io/}{Redis}, \href{https://www.influxdata.com/}{InfluxDB} și posibil altele. Scopul este să ne familiarizăm cu uneltele disponibile, să învățăm ce avantaje și dezavantaje au fiecare și cum să alegem sistemul potrivit pentru datele noastre.
+
+\subsection*{De ce avem nevoie de bazele de date?}
 
 Dacă ați scris până acum programe care lucrează cu fișiere pe disc, ați văzut că procesul poate fi destul de complicat: trebuie deschis fișierul, trebuie găsit rândul / poziția care ne interesează, trebuie să citim informațiile în formatul corect (e.g.~numere întregi, numere reale, șiruri de caractere, bytes etc).
 
@@ -66,34 +74,198 @@ Pe parcursul carierei voastre, vă veți întâlni cu tot felul de date:
 
 \begin{itemize}
     \item \textbf{Tabulare:} fișiere cu date separate prin virgulă (\textit{comma-separated values}, CSV) sau prin spații (\textit{tab-separated values}, TSV); conțin mai multe \emph{rânduri}, fiecare având valori pentru un set comun de \emph{coloane}.
+    \item \textbf{Vectori:} datele sunt reprezentate de vectori într-un spațiu vectorial cu multe dimensiuni, în care vectorii ,,apropiați'' codifică obiecte cu proprietăți asemănătoare.
+    \item \textbf{Geospațiale:} locații geografice (puncte reprezentate prin latitudine și longitudine), zone pe hartă, proiecții, geometrii/corpuri 3D etc. Se încadrează în conceptul de \href{https://en.wikipedia.org/wiki/Geographic_information_system}{Geographic Information System} --- GIS.
     \item \textbf{Tablouri multidimensionale:} vectori, matrici, tensori de rang înalt. Câteodată poartă și denumirea de \href{https://en.wikipedia.org/wiki/Data_cube}{\textit{data cube}} (în special seturile de date foarte mari).
     \item \textbf{Serii de timp:} o înșiruire de măsurători / înregistrări, indexate după momentul efectuării lor. De obicei, măsurătorile sunt realizate periodic, la un interval fix (rata de eșantionare).
     \item \textbf{Grafuri:} o colecție de \emph{noduri} și \emph{muchii} (sau \emph{arce}, în cazul grafurilor direcționate). Putem asocia măsurători cu fiecare nod sau fiecare muchie.
-    \item \textbf{Vectori:} datele sunt reprezentate de vectori într-un spațiu vectorial cu multe dimensiuni, în care vectorii ,,apropiați'' codifică obiecte cu proprietăți asemănătoare.
 \end{itemize}
+
+Acestea sunt doar câteva exemple de moduri în care pot fi reprezentate datele. Scopul nostru este să alegem formatul care permite codificarea cât mai fidelă și performantă a datelor, pentru a le putea transforma apoi în informații.
 
 \subsection*{Care sunt principalele tipuri de baze de date?}
 
+În funcție de natura datelor pe care vrem să le stocăm, sistemele de gestiune a bazelor de date se pot clasifica în:
 
 \begin{itemize}
-    \item Relaționale
-    \item Serii de timp
-    \item Vectoriale
+    \item Relaționale --- \href{https://www.postgresql.org/}{PostgreSQL}, \href{https://www.mysql.com/}{MySQL}, \href{https://mariadb.org/}{MariaDB}, \href{https://sqlite.org/index.html}{SQLite}, \href{https://www.microsoft.com/en/sql-server}{Microsoft SQL Server}, \href{https://en.wikipedia.org/wiki/Oracle_Database}{Oracle SQL}, \href{https://www.ibm.com/products/db2}{IBM Db2}
+    \item Orientate pe documente --- \href{https://www.mongodb.com/}{MongoDB}, \href{https://couchdb.apache.org/}{CouchDB}, \href{https://www.elastic.co/elasticsearch/}{ElasticSearch}, \href{https://solr.apache.org/}{Solr}
+    \item Pentru serii de timp --- \href{https://www.influxdata.com/}{InfluxDB}, \href{https://github.com/timescale/timescaledb}{TimescaleDB}, \href{https://clickhouse.com/}{ClickHouse}, \href{https://prometheus.io/}{Prometheus}
+    \item Vectoriale --- \href{https://redis.io/}{Redis}, \href{https://qdrant.tech/}{Qdrant}, \href{https://weaviate.io/}{Weaviate}
+    \item Grafuri --- \href{https://neo4j.com/}{Neo4j}
 \end{itemize}
 
-% TODO
+Fiecare sistem de gestiune a bazelor de date este optimizat pentru lucrul cu un anumit tip de date. Unele sunt suficient de flexibile pentru a acoperi mai multe tipuri de date în aceeași bază de date (de exemplu, MongoDB poate gestiona atât documente cât și vectori; PostgreSQL are extensii care îi permit să îmbine date relaționale, serii de timp și vectoriale).
 
 \section{Configurarea mediului de lucru}
 
-Primul sistem de gestiune a bazelor de date cu care vom lucra este \href{https://www.postgresql.org/}{PostgreSQL}, un sistem \textit{open source} și gratuit. Este folosit predominant în modul relațional, dar există extensii (tot \textit{open source} și gratuite) care permit utilizarea lui pentru stocarea și prelucrarea \href{https://github.com/timescale/timescaledb}{seriilor de timp} sau a \href{https://github.com/pgvector/pgvector}{datelor vectoriale}.
+Primul sistem de gestiune a bazelor de date cu care vom lucra este \href{https://www.postgresql.org/}{PostgreSQL}, un program \textit{open source} și gratuit. Este folosit predominant pentru baze de date relaționale, gestionate prin intermediul limbajului SQL, dar există extensii (tot \textit{open source} și gratuite) care permit utilizarea lui pentru stocarea și prelucrarea \href{https://github.com/timescale/timescaledb}{seriilor de timp}, \href{https://postgis.net/}{datelor geospațiale} sau a \href{https://github.com/pgvector/pgvector}{datelor vectoriale}.
 
-Recomandarea mea este să folosiți o instanță containerizată, pentru a evita complexitățile instalării PostgreSQL pe sistemul vostru și pentru a putea mult mai ușor să resetați baza de date; (în caz că o stricați \emoji{slightly-smiling-face}).
+Recomandarea noastră este să folosiți o instanță containerizată (instrucțiunile de mai jos), pentru a nu vă complica cu procesul de instalare PostgreSQL pe sistemul vostru și pentru a putea să resetați mai ușor baza de date (în caz că o stricați \emoji{slightly-smiling-face}).
 
 \subsection{Containerizat}
 
-% TODO
+O modalitate populară de câțiva ani de a împacheta și distribui produsele software este \href{https://www.docker.com/}{\emph{containerizarea}}. Un container software include de obicei o singură aplicație și toate dependințele (e.g.~bibliotecile) de care are nevoie să ruleze.
+
+Una dintre cele mai cunoscute platforme de gestiune a containerelor este \href{https://www.docker.com/}{Docker}. Ei au fost printre primii care au popularizat această abordare. Noi vă recomandăm să folosiți în schimb \href{https://podman.io/}{Podman}, care este complet gratuit și \textit{open source} (în comparație cu Docker, care are unele componente proprietare). Dacă în viitor ajungeți să lucrați cu containere pe un cluster \href{https://en.wikipedia.org/wiki/High-performance_computing}{HPC}, s-ar putea să întâlniți și sistemul \href{https://docs.sylabs.io/guides/4.6/user-guide/}{Singularity}.
+
+\textbf{Obiectiv:} urmați \href{https://podman.io/get-started}{instrucțiunile oficiale de pe site-ul Podman} pentru a instala executabilele \texttt{podman} și \texttt{podman-compose}. Puteți instala și \href{https://podman-desktop.io/downloads}{Podman Desktop} dacă vreți și o interfață grafică pentru gestionarea containerelor. Calculatoarele din laboratorul de la facultate ar trebui să aibă deja Podman instalat. Luați legătura cu tutorele de laborator dacă întâmpinați dificultăți.
+
+După ce ați instalat Podman, puteți încerca să rulați un container simplu pentru a testa funcționalitatea sistemului:
+
+\begin{minted}{shell}
+podman run --rm docker.io/hello-world
+\end{minted}
+
+Podman se va conecta la registrul public de containere \href{https://hub.docker.com/}{Docker Hub}, va descărca \href{https://www.ibm.com/think/topics/container-images}{imaginea} \href{https://hub.docker.com/_/hello-world/}{\texttt{hello-world}} și va rula o instanță containerizată a acestei aplicații. Parametrul \texttt{--rm} îi spune lui Podman să șteargă containerul după ce își termină execuția (nu vrem să rămână salvat și să consume resurse).
+
+Pentru a porni o instanță containerizată de PostgreSQL, puteți folosi următoarea sintaxă:
+
+\begin{minted}{shell}
+podman run \
+    --detach \
+    --name postgres-laborator \
+    --env POSTGRES_PASSWORD=parola \
+    --publish 5432:5432 \
+    docker.io/postgres
+\end{minted}
+
+Comanda va porni în fundal (\texttt{--detach}) un container denumit \texttt{postgres-laborator}, cu parola utilizatorului implicit \texttt{postgres} setată să fie \texttt{parola}, folosind imaginea \href{https://hub.docker.com/_/postgres/}{\texttt{docker.io/postgres}}. Port-ul 5432 din container va fi disponibil și pe \texttt{localhost}.
+
+Pentru a vedea dacă containerul a pornit cu succes, rulați următoarea comandă (care folosește utilitarul \href{https://www.postgresql.org/docs/current/app-psql.html}{\texttt{psql}}):
+
+\begin{minted}{shell}
+podman exec -it postgres-laborator psql --version
+\end{minted}
+
+Ar trebui să vă afișeze un mesaj similar cu următorul:
+\begin{verbatim}
+psql (PostgreSQL) 18.6 (Debian 18.6-1.pgdg13+2)
+\end{verbatim}
+
+Dacă nu funcționează, puteți diagnostica problema uitându-vă pe log-urile containerului:
+\begin{minted}{shell}
+podman logs postgres-laborator
+\end{minted}
+
+Pentru a opri ulterior containerul de PostgreSQL (care rulează în fundal și consumă resurse), puteți rula comanda
+
+\begin{minted}{shell}
+podman stop postgres-laborator
+\end{minted}
+
+Pentru a șterge cu totul instanța, {\color{red} inclusiv fișierele și datele din ea} (de exemplu, pentru a reseta totul), puteți folosi comanda:
+
+\begin{minted}{shell}
+podman rm --volumes postgres-laborator
+\end{minted}
 
 \subsection{Instalat local}
+
+Serverul de PostgreSQL este o aplicație \emph{open source} scrisă în \href{https://en.wikipedia.org/wiki/C_(programming_language)}{C}. Codul sursă îl puteți vedea \href{https://github.com/postgres/postgres}{aici}. Cu toate că ați putea să compilați aplicația de la sursă, recomandarea noastră este să instalați un pachet precompilat pentru sistemul vostru de operare.
+
+\textbf{Obiectiv:} urmați \href{https://www.postgresql.org/download/}{instrucțiunile oficiale} de pe site-ul PostgreSQL pentru a descărca și instala cea mai recentă versiune de Postgres pentru sistemul vostru de operare.
+
+Ca parte din instalarea standard, ar trebui să aveți acces și la utilitarul \href{https://www.postgresql.org/docs/current/app-psql.html}{\texttt{psql}}. Următoarea comandă:
+
+\begin{minted}{shell}
+psql --version
+\end{minted}
+
+Ar trebui să ruleze cu succes și să afișeze un mesaj similar cu următorul:
+
+\begin{verbatim}
+psql (PostgreSQL) 18.6
+\end{verbatim}
+
+Pentru a opri și reporni ulterior serverul de PostgreSQL, urmați \href{https://stackoverflow.com/q/45671327/5723188}{instrucțiunile specifice sistemului vostru de operare}. Pe Linux puteți folosi de obicei \href{https://systemd.io/}{systemd},
+\begin{minted}{shell}
+systemctl stop postgresql
+\end{minted}
+în timp ce pe Windows sau MacOS va trebui să folosiți interfața grafică sau interfața de control pentru serviciile de sistem.
+
+\section{Conectarea la baza de date}
+
+Acum că ați reușit să instalați și să porniți o instanță de PostgreSQL, trebuie să ne conectăm la ea pentru a putea începe să o folosim. La fel ca majoritatea sistemelor de gestiune a bazelor de date, Postgres adoptă \href{https://en.wikipedia.org/wiki/Client%E2%80%93server_model}{o arhitectură client--server}: sistemul acționează ca un server care oferă acces securizat prin rețea clienților (aplicațiilor).
+
+Există diferite moduri de a accesa baza de date, iar mai jos vom discuta despre câteva variante.
+
+\subsection{Din linia de comandă: \texttt{psql}}
+
+Sistemul de bază PostgreSQL include și utilitarul \href{https://www.postgresql.org/docs/current/app-psql.html}{\texttt{psql}}, o interfață din linia de comandă pentru gestiunea bazei de date.
+
+Dacă ați instalat PostgreSQL prin intermediul Podman, nu mai este nevoie să instalați separat altceva; puteți folosi versiunea de \texttt{psql} care vine inclusă în container:
+
+\begin{minted}{shell}
+podman exec -it postgres-laborator psql --username postgres
+\end{minted}
+
+Ar trebui să vă lase să accesați interfața \texttt{psql} fără să vă solicite vreo parolă (comanda rulează ca utilizatorul \texttt{postgres} în container, deci sistemul îl va recunoaște și îi va da acces la utilizatorul corespunzător din PostgreSQL).
+
+Dacă ați instalat PostgreSQL direct pe calculatorul vostru, cel mai probabil a fost inclus și pachetul care conține \texttt{psql}. Îl puteți folosi pentru a vă conecta la sistemul de gestiune a bazelor de date:
+
+\begin{minted}{shell}
+psql --username=postgres
+\end{minted}
+
+Dacă comanda nu este găsită, asigurați-vă că ați instalat și \texttt{psql}. Altfel, s-ar putea să fie nevoie să specificați câteva detalii adiționale pentru conectare:
+
+\begin{minted}{shell}
+psql --host=localhost --port=5432 --username=postgres --dbname=postgres
+\end{minted}
+
+În ambele cazuri, ar trebui să aveți acces la o interfață interactivă:
+
+\begin{verbatim}
+psql (18.6 (Debian 18.6-1.pgdg13+2))
+Type "help" for help.
+
+postgres=#
+\end{verbatim}
+
+Puteți introduce comenzi SQL sau metacomenzi, iar \texttt{psql} le va trimite spre serverul de PostgreSQL pentru a fi procesate. Încercați să rulați următoarea comandă pentru a vedea versiunea bazei de date:
+
+\begin{minted}{sql}
+SELECT version();
+\end{minted}
+
+O să vă afișeze un rând cu informații despre servereul de baze de date care rulează:
+
+\begin{verbatim}
+PostgreSQL 18.6 (Debian 18.6-1.pgdg13+2) on x86_64-pc-linux-gnu,
+compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit
+\end{verbatim}
+
+S-ar putea să fie nevoie să apăsați pe \texttt{q} după executarea comenzii, pentru a ieși din \href{https://unix.stackexchange.com/questions/144016/what-is-a-pager}{pager}. \texttt{psql} încearcă să formateze rezultatele comenzilor pentru a fi mai ușor de citit.
+
+La final, scrieți comanda \texttt{exit} și dați enter pentru a ieși din interfața \texttt{psql}.
+
+\subsection{Din browser: pgAdmin}
+
+\href{https://www.pgadmin.org/}{pgAdmin} este o aplicație web \textit{open source} care (așa cum sugerează și numele) permite gestiunea bazelor de date PostgreSQL.
+
+Dacă aveți deja instalat și configurat Podman, puteți rula această aplicație într-un container folosind următoarea comandă:
+
+\begin{minted}{shell}
+podman run \
+    --detach \
+    --publish 8080:80 \
+    --env 'PGADMIN_DEFAULT_EMAIL=user@example.com' \
+    --env 'PGADMIN_DEFAULT_PASSWORD=parola' \
+    docker.io/dpage/pgadmin4
+\end{minted}
+
+Altfel, urmați \href{https://www.pgadmin.org/download/}{instrucțiunile de instalare} specifice sistemului vostru de operare.
+
+După instalare, interfața web ar trebui să fie accesibilă din browser la adresa \href{http://localhost:8080}{\texttt{localhost:8080}} (sau \href{http://localhost:80}{\texttt{localhost:80}} dacă ați folosit-o pe cea din exemplul lor).
+
+% TODO
+
+\subsection{Interfață grafică: DataGrip}
+
+% TODO
+
+DataGrip este gratuit pentru utilizare necomercială sau pentru studenți.
 
 % TODO
 
