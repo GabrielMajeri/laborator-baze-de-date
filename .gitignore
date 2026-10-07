@@ -1,12 +1,2 @@
 # Zensical static site output
 /site/
-
-# LaTeX build files
-*.aux
-*.fdb_latexmk
-*.log
-*.fls
-*.pdf
-*.synctex.gz
-*.out
-_minted/
