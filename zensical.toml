@@ -1,18 +1,18 @@
 [project]
 site_url = "https://gabrielmajeri.ro/laborator-baze-de-date"
 site_name = "Laborator Baze de Date"
-# site_description = "Your project description"
-# site_author = "Your name"
+site_description = "Materiale pentru laboratorul de Baze de Date de la Facultatea de Fizică, Universitatea din București"
+site_author = "Gabriel Majeri"
 
-# copyright = "Copyright &copy; 2026 Your name"
+copyright = "Copyright &copy; 2026 Gabriel Majeri"
 
-# repo_url = "https://github.com/user/repo"
-# repo_name = "user/repo"
+# repo_url = "https://github.com/GabrielMajeri/laborator-baze-de-date"
+# repo_name = "GabrielMajeri/laborator-baze-de-date"
 # edit_uri = "edit/main/docs/"
 
 nav = [
-  { "Get started" = "index.md" },
-  { "Markdown in 5min" = "markdown.md" },
+  { "Introducere" = "index.md" },
+  { "Laboratorul 1" = "laboratorul-1.md" },
 ]
 
 # extra_css = ["stylesheets/extra.css"]
