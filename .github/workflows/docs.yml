@@ -23,6 +23,42 @@ jobs:
 
       - name: Check out the code
         uses: actions/checkout@v7
+        with:
+          # Fix for LFS files (https://zihaofu245.github.io/general/2025/09/12/git-lfs-guide.html)
+          lfs: true
+          fetch-depth: 0
+
+      # Cache LFS objects
+      - name: Cache Git LFS objects
+        uses: actions/cache@v4
+        with:
+          path: .git/lfs/objects
+          key: $-git-lfs-$-$
+          restore-keys: |
+            $-git-lfs-$-
+            $-git-lfs-
+
+      # Ensure LFS files are real (materialize)
+      - name: Ensure LFS files are real (materialize)
+        shell: bash
+        run: |
+          set -euo pipefail
+          git lfs install --local
+          git lfs fetch origin "${GITHUB_SHA}"
+          git lfs checkout
+          echo "LFS files tracked (pointer -> actual):"
+          git lfs ls-files
+
+      # Verify no LFS pointers in source assets
+      - name: Verify no LFS pointers in source assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          if grep -RIl "version https://git-lfs.github.com/spec" assets 2>/dev/null; then
+            echo "::error::Found LFS pointer(s) under assets/. 'git lfs checkout' did not materialize some files." >&2
+            exit 1
+          fi
+          echo "No LFS pointers in raw source assets."
 
       - name: Set up Python
         uses: actions/setup-python@v7
