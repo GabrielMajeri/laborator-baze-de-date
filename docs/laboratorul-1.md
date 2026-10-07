@@ -215,6 +215,7 @@ Dacă aveți deja instalat și configurat Podman, puteți rula această aplicaț
 ```shell
 podman run \
     --detach \
+    --name pgadmin-laborator \
     --publish 8080:80 \
     --env 'PGADMIN_DEFAULT_EMAIL=user@example.com' \
     --env 'PGADMIN_DEFAULT_PASSWORD=parola' \
