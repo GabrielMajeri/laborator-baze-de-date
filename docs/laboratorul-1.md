@@ -292,4 +292,40 @@ DataGrip oferă o mulțime de funcționalități avansate, cum ar fi completarea
 
 ## Exerciții
 
-Materialul pentru exerciții va fi adăugat ulterior.
+Acum că ați reușit să instalați și să porniți o instanță de PostgreSQL, să vă conectați la ea și să rulați comenzi SQL, este timpul să lucrăm câteva exerciții practice pentru a începe să ne familiarizăm cu mediul de lucru.
+
+1. Rulați comenzile din fișierul [`measurements.sql`](data/measurements.sql) pentru a crea o bază de date cu câteva tabele și date de test. Puteți folosi fie interfața `psql`, fie pgAdmin, fie DataGrip pentru a rula comenzile.
+
+2. Folosind interfața de interogări, rulați comanda
+```sql
+SELECT * FROM measurements;
+```
+pentru a vedea toate datele din tabelul `measurements`.
+
+    Observați structura tabelului și tipurile de date folosite.
+
+3. Faceți același lucru pentru tabelul `sensors` și observați relația dintre cele două tabele. Încercați să înțelegeți cum sunt legate datele între ele.
+
+    Dacă folosiți pgAdmin sau DataGrip, puteți vizualiza relațiile dintre tabele folosind funcționalitățile grafice oferite de aceste aplicații.
+
+4. Dacă vreți să vedeți doar anumite coloane din tabelul `measurements`, puteți folosi o interogare de tip `SELECT` cu specificarea coloanelor dorite. De exemplu, pentru a vedea doar coloanele `sensor_id`, `timestamp` și `value`, rulați:
+```sql
+SELECT sensor_id, timestamp, value
+FROM measurements;
+```
+
+5. Pentru a extrage toate informațiile despre măsurătorile efectuate de un anumit senzor, rulați o interogare care să folosească o condiție `WHERE` pentru a filtra datele după `sensor_id`:
+```sql
+SELECT *
+FROM measurements
+WHERE sensor_id = ???;
+```
+Înlocuiți `???` cu ID-ul unui senzor din tabelul `sensors`.
+
+6. Pe lângă obținerea datelor brute, SQL ne permite să calculăm statistici („agregate”). Încercați să rulați o interogare care să calculeze media valorilor măsurate de un anumit senzor:
+```sql
+SELECT AVG(value) AS average_value
+FROM measurements
+WHERE sensor_id = ???;
+```
+Ce se întâmplă dacă în lista de coloane selectate includem, de exemplu, și coloana `id` sau `timestamp`?
