@@ -290,9 +290,59 @@ După ce ați configurat și salvat sursa de date, puteți folosi interfața gra
 
 DataGrip oferă o mulțime de funcționalități avansate, cum ar fi completarea automată a codului, vizualizarea relațiilor dintre tabele și generarea de diagrame. Îl vom putea folosi și pentru alte tipuri de baze de date pe parcursul laboratorului, nu doar pentru cele relaționale, cum ar fi PostgreSQL.
 
+## Limbajul SQL
+
+Acum că am reușit să configurăm și să ne conectăm la o instanță de PostgreSQL, putem începe să învățăm cum să folosim acest sistem. Toate operațiile efectuate în PostgreSQL sunt intermediate de limbajul de interogare structurat, _Structured Query Language_ (SQL), inițialism care apare și în numele aplicației. Acesta a fost introdus în anii 1970 și a devenit standard internațional în 1986. De atunci, a fost extins și modificat de mai multe ori (ducând la mai multe _versiuni_ și _dialecte_), dar principiile de bază au rămas aceleași.
+
+### Modelul relațional
+
+Termenul de „relațional” provine de la faptul că datele sunt stocate în **tabele**, care pot fi considerate _relații_ între diferite entități. Fiecare tabel are un număr fix de coloane, fiecare cu un tip de date specific, și un număr variabil de rânduri, fiecare reprezentând o instanță a entității respective.
+
+În matematică, o relație $n$-ară este o submulțime a produsului cartezian al $n$ mulțimi. Un element dintr-un tabel este reprezentat de un $n$-tuplu:
+
+$$
+    r = (a_1, a_2, \ldots, a_n) \in R
+$$
+
+care aparține relației $R \subseteq A_1 \times A_2 \times \ldots \times A_n$, unde $A_i$ este domeniul de valori pentru coloana $i$. De exemplu, dacă avem un tabel `sensors` cu trei coloane: `id` (tipul de date `integer`), `name` (tipul de date `text`) și `location` (tot `text`), atunci o instanță a acestui tabel ar putea fi:
+
+$$
+    r = (1, \text{,,Senzor de temperatură''}, \text{,,Măgurele"})
+$$
+
+unde $A_1 = \mathbb{Z}$ (numerele întregi), iar $A_2 = A_3 = \left\{ \text{mulțimea tuturor șirurilor de caractere} \right\}$.
+
+## Interogarea datelor
+
+Cea mai comună operație pe care o vom efectua asupra datelor este **interogarea** lor (i.e. citirea lor și extragerea de informații). În SQL, interogările se fac folosind [comanda `SELECT`](https://www.postgresql.org/docs/current/sql-select.html). Aceasta poate fi folosită pentru a **selecta** anumite coloane dintr-un tabel, pentru a **filtra** rândurile în funcție de anumite condiții sau pentru a **combina** date din mai multe tabele.
+
+Sintaxa de bază a comenzii `SELECT` este următoarea:
+
+```sql
+SELECT coloana_1, coloana_2, ..., coloana_n
+FROM nume_tabel;
+```
+
+Dacă vrem să selectăm toate coloanele dintr-un tabel, putem folosi caracterul `*`:
+
+```sql
+SELECT *
+FROM nume_tabel;
+```
+
+Dacă vrem să selectăm doar anumite rânduri, în funcție de o condiție, putem folosi clauza `WHERE`:
+
+```sql
+SELECT coloana_1, coloana_2, ..., coloana_n
+FROM nume_tabel
+WHERE conditie;
+```
+
+unde `conditie` poate fi o expresie logică care depinde de valorile din coloanele tabelului. De exemplu, putem selecta doar rândurile în care valoarea unei coloane este mai mare decât un anumit prag (`nume_coloana > 0.5`) sau în care o coloană textuală conține un anumit șir de caractere (`nume_coloana LIKE '%text%'`).
+
 ## Exerciții
 
-Acum că ați reușit să instalați și să porniți o instanță de PostgreSQL, să vă conectați la ea și să rulați comenzi SQL, este timpul să lucrăm câteva exerciții practice pentru a începe să ne familiarizăm cu mediul de lucru.
+A venit timpul să lucrăm câteva exerciții practice pentru a începe să ne familiarizăm cu mediul de lucru.
 
 1. Rulați comenzile din fișierul [`measurements.sql`](data/measurements.sql) pentru a crea o bază de date cu câteva tabele și date de test. Puteți folosi fie interfața `psql`, fie pgAdmin, fie DataGrip pentru a rula comenzile.
 
