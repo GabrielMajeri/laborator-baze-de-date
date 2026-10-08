@@ -6,3 +6,11 @@ de la specializările **Fizică Informatică** (anul III) și **Robotică** (anu
 Recomandarea este să parcurgeți laboratoarele în ordine cronologică, pentru a avea o experiență de învățare cât mai completă și coerentă. Primul laborator se găsește [aici](laboratorul-1.md).
 
 **Cadre didactice:** [Petre Boboc](https://orcid.org/0000-0001-5532-4887) și [Gabriel Majeri](https://orcid.org/0009-0000-3192-4212)
+
+**Surse de date** (site-uri unde puteți găsi seturi de date):
+
+- [CERN Open Data Portal](https://opendata.cern.ch/)
+- [Kaggle Datasets](https://www.kaggle.com/datasets)
+- [National Nuclear Data Center (NNDC)](https://www.nndc.bnl.gov/databases/)
+- [OpenML](https://www.openml.org/)
+- [Zenodo](https://zenodo.org/)
