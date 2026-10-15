@@ -13,6 +13,7 @@ copyright = "Copyright &copy; 2026 Gabriel Majeri"
 nav = [
   { "Introducere" = "index.md" },
   { "Laboratorul 1" = "laboratorul-1.md" },
+  { "Laboratorul 2" = "laboratorul-2.md" },
 ]
 
 extra_javascript = [
