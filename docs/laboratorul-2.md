@@ -18,19 +18,41 @@ $$
 $$
 Fiecare tuplu este un **rând** dintr-un **tabel** (numit și _relație_). Fiecare tabel are o **denumire** _unică_ (cel puțin, la nivel de bază de date sau schemă). Coloanele tabelului sunt identificate prin **nume** și sunt asociate cu un **tip de date**. Toate rândurile din tabel trebuie să aibă aceeași structură; pot avea valori diferite în fiecare coloană, dar cu respectarea tipului de date și a constrângerilor asociate.
 
-Pentru exemplul de mai sus, tabelul nostru ar putea fi descris (intuitiv) în felul următor:
+Pentru rândul dat ca exemplu mai sus, un tabel care să îl conțină ar putea fi:
 
 - Denumire tabel/relație: „studenți”
 - Coloane:
-    - ID unic: număr întreg, _cheie primară_ (vom discuta mai târziu ce reprezintă)
+    - ID unic: număr întreg
     - Prenume: text de lungime variabilă
     - Nume: text de lungime variabilă
     - Facultate: text de lungime variabilă
     - Medie admitere: număr real, precizie de 4 zecimale
 
+În principiu, este bine să începem proiectarea unei baze de date prin identificarea obiectelor care trebuie stocate și a proprietăților de interes ale acestora. După aceea, începem să le implementăm într-un sistem de gestiune a bazelor de date (e.g. PostgreSQL) folosind comenzi de SQL (pe care le vom discuta în acest laborator).
+
+### Tipuri de date
+
+Există o multitudine de tipuri fundamentale de date pe care le putem folosi în proiectarea bazei noastre de date (șiruri de caractere, șiruri/date binare, numere întregi, numere reale cu reprezentare în virgulă mobilă, numere zecimale momente de timp și date, intervale de timp, etc).
+
+Câteva tipuri de date pe care le veți folosi destul de des:
+
+- `int` sau `integer`: numere întregi (pe 4 bytes)
+
+- `real`: număr real, reprezentare cu virgulă mobilă (pe 4 bytes)
+
+- `text`: șir de caractere (de lungime variabilă)
+
+- `time`: moment de timp (pe parcursul unei zile)
+
+- `timestamp`: dată și timp
+
+Lista completă cu tipurile de date cunoscute de PostgreSQL poate fi găsită [aici](https://www.postgresql.org/docs/current/datatype.html). Totodată, vom vedea mai târziu că se pot crea și tipuri de date noi („compuse”), deși această abordare vine cu avantaje și dezavantaje.
+
 ## Diagrame ER
 
-Cel mai natural mod de a reprezenta vizual tabelele dintr-o bază de date relațională și legăturile dintre ele este folosind o **diagramă entitate-relație** (_Entity-Relationship Diagram_ sau mai pe scurt _ER diagram_).
+Cel mai natural mod de a reprezenta vizual tabelele dintr-o bază de date relațională și legăturile dintre ele este folosind o **diagramă entitate-relație** (_Entity-Relationship Diagram_ sau mai pe scurt _ER diagram_). Reprezentăm tabelele ca dreptunghiuri cu liste de coloane (și tipurile de date asociate), legate între ele prin săgeți (care simbolizează referințele / constrângerile dintre tabele).
+
+De exemplu, tabelul cu studenți descris anterior poate fi reprezentat printr-o diagramă foarte simplă:
 
 ```mermaid
 erDiagram
@@ -43,17 +65,31 @@ erDiagram
     }
 ```
 
+În schimb, tabelul cu senzori și măsurători, folosit ca exemplu la sfârșitul primului laborator, ar avea următoare diagramă ER:
+
 ```mermaid
----
-title: Senzori și măsurători
----
 erDiagram
-    SENSORS ||--o{ MEASUREMENTS : takes
+    SENSORS ||--o{ MEASUREMENTS : has
+    SENSORS {
+        integer id PK
+        string name
+        string location
+    }
+    MEASUREMENTS {
+        integer id PK
+        integer sensor_id FK
+        timestamp ts
+        float value
+    }
 ```
 
 ## Introducere în SQL
 
 **Limbajul de interogare structurat** (_Structured Query Language_ - SQL) a fost introdus în anii '70, iar începând cu anii '80 a ajuns destul de repede să fie metoda preferată pentru a interacționa cu bazele de date. Începând cu 1986, a fost inclusiv standardizat de [ANSI](https://en.wikipedia.org/wiki/American_National_Standards_Institute) și ulterior și de [ISO](https://en.wikipedia.org/wiki/International_Organization_for_Standardization).
+
+Limbajul SQL este un [limbaj de programare _declarativ_](https://en.wikipedia.org/wiki/Declarative_programming). În comparație cu limbajele imperative/procedurale cu care v-ați obișnuit (e.g. C/C++/Python), un limbaj declarativ se concentrează pe rezultatele pe care dorim să le obținem, nu pe modul în care calculăm/determinăm acele valori.
+
+De menționat că limbajul SQL este _case-insensitive_; toate comenziile pot fi scrise `cu litere mici` sau `CU LITERE MARI` sau `CU o combiNAȚiE ArBiTrARĂ` de litere mici și mari.
 
 ## Categorii de comenzi
 
@@ -68,6 +104,45 @@ Toate comenziile din SQL (varianta standard, de bază, ignorând extensiile) pot
 - **Transaction Control Language** (TCL): comenzi pentru a gestiona sistemul de _tranzacții_, care permit utilizarea concurentă a bazei de date într-un mod sigur. Vom discuta despre tranzacții în detaliu într-un laborator viitor.
 
 - **Data Control Language** (DCL): comenzi folosite pentru a acorda sau revoca accesul unor utilizatori la anumite tabele sau comenzi din baza de date. Foarte utile într-un mediu de lucru de producție, în care putem avea mai multe conturi care se conectează la același BD.
+
+## Crearea unei baze de date
+
+O să parcurgem pas cu pas toate etapele necesare creării unei baze de date, pentru a înțelege codul din fișierul [`measurements.sql`](data/measurements.sql) pe care l-am folosit data trecută.
+
+Când am instalat PostgreSQL, respectiv când am creat container-ul, a fost creată/inițializată automat și o _bază de dată_ (denumită `postgres`, la fel ca numele utilizatorului implicit) iar noi am lucrat în aceasta. În realitate, un singur server de PostgreSQL poate gestiona zeci sau sute de baze de date distincte, fiecare cu propriile scheme (tabele, legături, date) etc. Pentru această parte a laboratorului, vom crea o bază de date distinctă:
+
+```sql
+CREATE DATABASE exercitiu;
+```
+
+Pentru a selecta baza de date nou-creată și pentru a putea rula comenzi în ea, putem folosi metacomanda `\connect`:
+
+```sql
+\connect exercitiu
+```
+
+Dacă folosiți o interfață grafică cum ar fi pgAdmin sau DataGrip, s-ar putea să fie nevoie în schimb să comutați la noua bază de date prin intermediul interfeței.
+
+Având în vedere relația dintre tabelel noastre, vom începe prin a crea tabelul pentru stocarea listei de senzori:
+
+```sql
+CREATE TABLE sensors (
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL,
+    location TEXT NOT NULL
+);
+```
+
+După aceea, vom crea laboratorul de măsurători:
+
+```sql
+CREATE TABLE measurements (
+    id INTEGER PRIMARY KEY,
+    sensor_id INT NOT NULL REFERENCES sensors(id) ON DELETE RESTRICT,
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    value FLOAT NOT NULL
+);
+```
 
 ## Exerciții
 
