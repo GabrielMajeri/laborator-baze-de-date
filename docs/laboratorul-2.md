@@ -146,4 +146,8 @@ CREATE TABLE measurements (
 
 ## Exerciții
 
-1. Încercați să rezolvați [exercițiile din categoria _Basic exercises_](https://pgexercises.com/questions/basic/) de pe site-ul [PostgreSQL Exercises](https://pgexercises.com/).
+1. Încărcați în baza voastră de date fișierul [`measurements_v2.sql`](data/measurements_v2.sql).
+
+2. Citiți/afișați toate măsurătorile realizate de către senzori. Afișați pe o coloană nouă incertitudinea relativă a fiecărei măsurători.
+
+3. Încercați să rezolvați [exercițiile din categoria _Basic exercises_](https://pgexercises.com/questions/basic/) de pe site-ul [PostgreSQL Exercises](https://pgexercises.com/).
