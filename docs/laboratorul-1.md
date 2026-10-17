@@ -272,7 +272,7 @@ Pentru a putea executa comenzi în primele laboratoare, va trebui să folosiți 
 
 ### Interfață grafică: DataGrip
 
-[DataGrip](https://www.jetbrains.com/datagrip/) este un IDE (*Integrated Development Environment*) pentru baze de date, dezvoltat de compania [JetBrains](https://www.jetbrains.com/). Este o aplicație comercială, dar oferă o perioadă de probă gratuită de 30 de zile. De asemenea, este gratuită pentru studenți și pentru utilizare necomercială.
+[DataGrip](https://www.jetbrains.com/datagrip/) este un IDE (*Integrated Development Environment*) pentru baze de date, dezvoltat de compania [JetBrains](https://www.jetbrains.com/). Este o aplicație comercială, dar oferă o perioadă de probă gratuită de 30 de zile. În calitate de studenți, puteți aplica gratuit pentru [JetBrains Student Pack](https://www.jetbrains.com/academy/student-pack/) (folosiți adresa de `@s.unibuc.ro`).
 
 Puteți descărca și instala DataGrip urmând [instrucțiunile de pe site-ul oficial](https://www.jetbrains.com/datagrip/download/). După ce o deschideți, creați un nou proiect pentru laborator și configurați conexiunea, la fel cum am făcut pentru pgAdmin:
 

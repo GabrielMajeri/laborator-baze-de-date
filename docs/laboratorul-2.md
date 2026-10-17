@@ -2,7 +2,7 @@
 
 !!! abstract "Obiective"
 
-    Să ne familiarizăm cu limbajul SQL și cu principalele tipuri de comenzi. Să învățăm despre modelul relațional al datelor și despre cum putem proiecta o schemă de bază de date, respectiv cum o putem reprezenta grafic.
+    Să ne familiarizăm cu limbajul SQL și cu principalele tipuri de comenzi. Să învățăm despre modelul relațional al datelor și despre cum putem proiecta o schemă de bază de date, respectiv cum o putem reprezenta grafic. Să înțelegem care sunt pașii pe care trebuie să-i parcurgem pentru a crea o nouă bază de date.
 
 !!! warning
 
@@ -32,7 +32,7 @@ Pentru rândul dat ca exemplu mai sus, un tabel care să îl conțină ar putea 
 
 ### Tipuri de date
 
-Există o multitudine de tipuri fundamentale de date pe care le putem folosi în proiectarea bazei noastre de date (șiruri de caractere, șiruri/date binare, numere întregi, numere reale cu reprezentare în virgulă mobilă, numere zecimale momente de timp și date, intervale de timp, etc).
+Există o multitudine de tipuri de date (_data types_) fundamentale pe care le putem folosi în proiectarea bazei noastre de date (șiruri de caractere, șiruri/date binare, numere întregi, numere reale cu reprezentare în virgulă mobilă, numere zecimale momente de timp și date, intervale de timp, etc). Multe dintre acestea corespund la tipuri de date pe care le știm din alte limbaje de programare.
 
 Câteva tipuri de date pe care le veți folosi destul de des:
 
@@ -50,7 +50,7 @@ Lista completă cu tipurile de date cunoscute de PostgreSQL poate fi găsită [a
 
 ## Diagrame ER
 
-Cel mai natural mod de a reprezenta vizual tabelele dintr-o bază de date relațională și legăturile dintre ele este folosind o **diagramă entitate-relație** (_Entity-Relationship Diagram_ sau mai pe scurt _ER diagram_). Reprezentăm tabelele ca dreptunghiuri cu liste de coloane (și tipurile de date asociate), legate între ele prin săgeți (care simbolizează referințele / constrângerile dintre tabele).
+Un mod natural și intuitiv de a reprezenta tabelele dintr-o bază de date relațională și legăturile dintre ele este folosind o **diagramă entitate-relație** (_Entity-Relationship Diagram_ sau mai pe scurt _ER diagram_). Reprezentăm tabelele ca dreptunghiuri cu liste de coloane (și tipurile de date asociate), legate între ele prin săgeți (care simbolizează referințele / constrângerile dintre tabele).
 
 De exemplu, tabelul cu studenți descris anterior poate fi reprezentat printr-o diagramă foarte simplă:
 
@@ -83,6 +83,16 @@ erDiagram
     }
 ```
 
+Liniuțele adăugate la baza segmentelor care unesc tabelele indică ce fel de relație avem între acele entități:
+
+- Relație 1-la-1 între entități (_one-to-one_)
+
+- Relație de la o entitate la mai multe (_one-to-many_)
+
+- Relație între mai multe entități sursă și mai multe entități corespondente (_many-to-many_)
+
+De asemenea, unele relații pot fi „opționale”, în sensul că anumite rânduri s-ar putea să nu aibă corespodenți (de exemplu, un senzor care nu are încă nicio măsurătoare asociată).
+
 ## Introducere în SQL
 
 **Limbajul de interogare structurat** (_Structured Query Language_ - SQL) a fost introdus în anii '70, iar începând cu anii '80 a ajuns destul de repede să fie metoda preferată pentru a interacționa cu bazele de date. Începând cu 1986, a fost inclusiv standardizat de [ANSI](https://en.wikipedia.org/wiki/American_National_Standards_Institute) și ulterior și de [ISO](https://en.wikipedia.org/wiki/International_Organization_for_Standardization).
@@ -107,7 +117,7 @@ Toate comenziile din SQL (varianta standard, de bază, ignorând extensiile) pot
 
 ## Crearea unei baze de date
 
-O să parcurgem pas cu pas toate etapele necesare creării unei baze de date, pentru a înțelege codul din fișierul [`measurements.sql`](data/measurements.sql) pe care l-am folosit data trecută.
+O să parcurgem pas cu pas toate etapele necesare creării unei baze de date, pentru a începe să înțelegem codul din fișierul [`measurements.sql`](data/measurements.sql), pe care l-am folosit data trecută.
 
 Când am instalat PostgreSQL, respectiv când am creat container-ul, a fost creată/inițializată automat și o _bază de dată_ (denumită `postgres`, la fel ca numele utilizatorului implicit) iar noi am lucrat în aceasta. În realitate, un singur server de PostgreSQL poate gestiona zeci sau sute de baze de date distincte, fiecare cu propriile scheme (tabele, legături, date) etc. Pentru această parte a laboratorului, vom crea o bază de date distinctă:
 
@@ -121,33 +131,99 @@ Pentru a selecta baza de date nou-creată și pentru a putea rula comenzi în ea
 \connect exercitiu
 ```
 
-Dacă folosiți o interfață grafică cum ar fi pgAdmin sau DataGrip, s-ar putea să fie nevoie în schimb să comutați la noua bază de date prin intermediul interfeței.
+Dacă folosiți o interfață grafică cum ar fi pgAdmin sau DataGrip, s-ar putea să fie nevoie să comutați la noua bază de date prin intermediul interfeței.
 
-Având în vedere relația dintre tabelel noastre, vom începe prin a crea tabelul pentru stocarea listei de senzori:
+<figure markdown="span">
+![Comutarea la baza de date nou create în DataGrip](images/datagrip-setup-guide/switching-databases.png)
+<figcaption>Schimbarea bazei de date active în DataGrip</figcaption>
+</figure>
+
+Vrem să creăm un tabel pentru a stoca o listă de roboți/drone. Comanda pe care trebuie să o folosim este [`CREATE TABLE`](https://www.postgresql.org/docs/current/sql-createtable.html), care are o sintaxă similară cu exemplul de mai jos:
 
 ```sql
-CREATE TABLE sensors (
-    id INTEGER PRIMARY KEY,
-    name TEXT NOT NULL,
-    location TEXT NOT NULL
+-- Tabel pentru lista de roboți
+CREATE TABLE robots (
+    name TEXT,
+    weight REAL, -- Greutatea robotului (in kg)
+    sensors TEXT
 );
 ```
 
-După aceea, vom crea laboratorul de măsurători:
+Observați de asemenea rândurile/secțiunile care încep cu `--`. Acestea sunt _comentarii_; segmente de cod pe care baza de date le ignoră când parcurge comanda SQL introdusă.
+
+Acum vom introduce câteva înregistrări în tabel, folosind comanda [`INSERT`](https://www.postgresql.org/docs/current/sql-insert.html):
 
 ```sql
-CREATE TABLE measurements (
-    id INTEGER PRIMARY KEY,
-    sensor_id INT NOT NULL REFERENCES sensors(id) ON DELETE RESTRICT,
-    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    value FLOAT NOT NULL
+INSERT INTO robots (name, weight, sensors)
+VALUES ('Atlas', 150.0, 'infraroșu');
+
+INSERT INTO robots (name, weight, sensors)
+VALUES ('Megatron', 100.0, 'de temperatura, optici');
+```
+
+Tabelul nostru este asemănător unui _spreadsheet_ dintr-o aplicație de calcul tabelar, cu diferența că fiecare coloană are o denumire/etichetă și este restricționată să accepte un anumit tip de date.
+
+Pentru a verifica că am inserat cu succes rândurile, putem citi tot conținutul tabelului folosind comanda [`SELECT`](https://www.postgresql.org/docs/current/sql-select.html):
+
+```sql
+SELECT * FROM robots;
+```
+
+Ce facem dacă am greșit greutatea unui robot și vrem să modificăm valoarea reținută? Putem folosi comanda [`UPDATE`](https://www.postgresql.org/docs/current/sql-update.html), dar va trebui să includem o clauză `WHERE` ca să indicăm rândurile care vrem să fie modificate (altfel, ar actualiza greutățile tuturor roboților!):
+
+```sql
+UPDATE robots SET weight = 72.5 WHERE name = 'Atlas';
+```
+
+Putem folosi din nou comanda `SELECT` pentru a verifica că modificarea a fost salvată cu succes.
+
+Dacă la un moment dat un robot se strică sau îl pierdem, putem elimina rândul corespunzător din baza de date folosind comanda [`DELETE`](https://www.postgresql.org/docs/current/sql-delete.html):
+
+```sql
+DELETE from robots where name = 'Megatron';
+```
+
+S-ar putea să nu vrem să eliminăm un robot anume, ci să nu mai stocăm deloc informația despre greutatea robotului. În acest caz, putem folosi o comandă de tipul [`ALTER TABLE`](https://www.postgresql.org/docs/current/sql-altertable.html):
+
+```sql
+ALTER TABLE robots DROP COLUMN weight;
+```
+
+!!! warning
+
+    Eliminarea unei coloane din tabel duce la pierderea tuturor valorilor conținute în acea coloană. Asigurați-vă că ați făcut o copie de siguranță la baza voastră de date înainte de a șterge coloane în practică.
+
+Ce se întâmplă dacă (din greșeală sau intenționat) adăugăm același robot de două ori?
+
+```sql
+INSERT INTO robots (name, sensors) VALUES ('Zephyr', 'fara senzori');
+INSERT INTO robots (name, sensors) VALUES ('Zephyr', 'fara senzori');
+SELECT * FROM robots;
+```
+
+Observăm că în tabel au fost adăugate două rânduri identice, corespunzătoare în realitate aceluiași robot. Acest comportament nu ne convine, însă, din fericire, bazele de date relaționale au fost concepute pentru a preveni tocmai acest tip de eroare / inconsistență.
+
+Pentru simplitate, vom șterge cu totul tabelul existent, folosind comanda [`DROP TABLE`](https://www.postgresql.org/docs/current/sql-droptable.html),
+
+```sql
+DROP TABLE robots;
+```
+
+iar apoi îl vom crea din nou, dar de data asta vom marca coloana `name` drept [**cheie primară**](https://www.postgresql.org/docs/current/ddl-constraints.html) (_primary key_):
+
+```sql
+CREATE TABLE robots (
+    name TEXT PRIMARY KEY,
+    sensors TEXT
 );
 ```
 
-## Exerciții
+Încercați acum să inserați de două ori același robot (sau doi roboți diferiți cu aceeași denumire). Veți observa că primiți eroare:
 
-1. Încărcați în baza voastră de date fișierul [`measurements_v2.sql`](data/measurements_v2.sql).
+```sql
+INSERT INTO robots (name, sensors) VALUES ('Zephyr', 'fara senzori');
+-- Următorul insert va da eroare!
+INSERT INTO robots (name, sensors) VALUES ('Zephyr', 'fara senzori');
+```
 
-2. Citiți/afișați toate măsurătorile realizate de către senzori. Afișați pe o coloană nouă incertitudinea relativă a fiecărei măsurători.
-
-3. Încercați să rezolvați [exercițiile din categoria _Basic exercises_](https://pgexercises.com/questions/basic/) de pe site-ul [PostgreSQL Exercises](https://pgexercises.com/).
+Constrângerile de integritate la nivelul bazei de date sunt mecanisme foarte puternice, prin care putem să ne asigurăm că evităm greșelile și protejăm corectitudinea datelor noastre.
