@@ -14,6 +14,7 @@ nav = [
   { "Introducere" = "index.md" },
   { "Laboratorul 1" = "laboratorul-1.md" },
   { "Laboratorul 2" = "laboratorul-2.md" },
+  { "Laboratorul 3" = "laboratorul-3.md" },
 ]
 
 extra_javascript = [
