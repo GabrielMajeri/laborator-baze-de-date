@@ -10,17 +10,6 @@
 
 Pentru acest laborator, vom lucra tot cu senzori și măsurători, dar folosind o schemă puțin mai elaborată: [`measurements_v2.sql`](data/measurements_v2.sql). Recomandarea este să creați o bază de date nouă (folosind comanda `CREATE DATABASE`) în care să importați tabelele și datele din fișierul acesta.
 
-De exemplu, din directorul rădăcină al proiectului, puteți crea baza de date și încărca schema astfel:
-
-```bash
-createdb --username=postgres measurements
-psql --username=postgres \
-    --dbname=measurements \
-    --file=docs/data/measurements_v2.sql
-```
-
-Înlocuiți numele bazei și opțiunile de conectare cu cele folosite pe calculatorul vostru.
-
 Dacă analizați comenzile de DDL din fișier, veți observa câteva cuvinte-cheie și funcționalități pe care nu le-am discutat încă:
 
 - Cheile primare ale tabelelor au tipul de date `SERIAL`, respectiv `BIGSERIAL`. Acestea sunt [pseudo-tipuri de date specifice PostgreSQL](https://www.postgresql.org/docs/current/datatype-numeric.html#DATATYPE-SERIAL), care creează o secvență și o valoare implicită pentru a genera automat numere întregi la inserare. `SERIAL` folosește un `integer`, iar `BIGSERIAL` un `bigint`.
@@ -324,7 +313,9 @@ Mesajul de eroare trebuie interpretat, nu ignorat: operația nu a fost acceptat�
 
 ## Salvarea și restaurarea unei copii de siguranță
 
-Pentru a salva schema și datele unei baze PostgreSQL folosim utilitarul `pg_dump`. Fișierul rezultat în format SQL poate fi restaurat prin `psql` într-o bază de date existentă:
+Pentru a salva schema și datele unei baze PostgreSQL folosim utilitarul [`pg_dump`](https://www.postgresql.org/docs/current/app-pgdump.html). Dacă lucrați cu DataGrip, puteți folosi această unealtă [prin intermediul interfeței grafice](https://www.jetbrains.com/help/datagrip/export-data.html). Fișierul rezultat în format SQL poate fi restaurat prin `psql` într-o bază de date existentă.
+
+De exemplu, lucrând din linia de comandă:
 
 ```bash
 pg_dump --username=postgres --dbname=measurements \
@@ -335,7 +326,9 @@ psql --username=postgres --dbname=measurements-restored \
     --file=measurements-backup.sql
 ```
 
-Înlocuiți numele bazei și opțiunile de conectare cu cele folosite pe calculatorul vostru. Dacă baza este rulată într-un container, comenzile pot fi executate în container sau pot primi opțiunile `--host`, `--port`, `--username` și `--dbname` corespunzătoare.
+În aceste comenzi, `pg_dump` face exportul, `createdb` creează baza destinație, iar `psql` importă dump-ul SQL.
+
+Înlocuiți numele bazei și opțiunile de conectare cu cele folosite pe calculatorul vostru. Dacă PostgreSQL este rulat într-un container, comenzile pot fi executate în container (`podman exec psql ...`) sau pot primi opțiunile `--host`, `--port`, `--username` și `--dbname` corespunzătoare (în acest caz, aveți grijă: fișierul de backup generat va fi salvat tot în interiorul container-ului; va fi nevoie [să copiați fișierul în afara lui](https://www.geeksforgeeks.org/devops/copying-files-to-and-from-docker-containers/)).
 
 După restaurare, verificați rezultatul conectându-vă la baza nouă și rulând câteva interogări, de exemplu:
 
@@ -344,20 +337,7 @@ SELECT COUNT(*) FROM sensors;
 SELECT COUNT(*) FROM measurements;
 ```
 
-În aceste comenzi, `pg_dump` face exportul, `createdb` creează baza destinație, iar `psql` importă dump-ul SQL. Pentru baze mari PostgreSQL oferă și formatul personalizat:
-
-```bash
-pg_dump --format=custom --username=postgres \
-    --dbname=measurements \
-    --file=measurements-backup.dump
-
-createdb --username=postgres measurements-restored-custom
-pg_restore --username=postgres \
-    --dbname=measurements-restored-custom \
-    measurements-backup.dump
-```
-
-Un dump în format SQL este ușor de inspectat și folosit cu `psql`, însă formatul custom permite opțiuni suplimentare la restaurare. O copie de siguranță este utilă numai dacă am verificat și faptul că poate fi restaurată.
+O copie de siguranță este utilă numai dacă am verificat și faptul că poate fi restaurată.
 
 ## Exerciții
 
