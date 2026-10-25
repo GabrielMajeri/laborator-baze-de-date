@@ -1,0 +1,374 @@
+Săptămâna 1 — Introducere în baze de date
+- Curs
+  - Ce este o bază de date și ce face un DBMS
+  - De ce nu stocăm pur și simplu datele în fișiere
+  - Schema, date, query, tranzacție
+  - Baze relaționale vs NoSQL
+  - SQL vs NoSQL
+  - Tipuri de NoSQL: document, key-value, time-series
+  - OLTP vs OLAP
+  - ACID — introducere
+  - PostgreSQL, MongoDB, Redis și InfluxDB: rol și use cases
+  - Polyglot persistence
+- Demo curs
+  - Aceeași informație reprezentată în PostgreSQL, MongoDB, Redis și InfluxDB
+  - Câte un query simplu în fiecare
+- Laborator
+  - Docker / Docker Compose
+  - Pornire PostgreSQL, MongoDB, Redis și InfluxDB
+  - Conectare la fiecare DB
+  - Creare DB/collection
+  - Primele operații CRUD
+Săptămâna 2 — PostgreSQL: modelul relațional
+- Curs
+  - Relation, tuple, attribute
+  - Schema vs instance
+  - Tipuri de date
+  - Primary key
+  - Candidate și composite keys
+  - Foreign key
+  - Constraints
+  - Integritate referențială
+  - Relații 1:1, 1:N, N:M
+  - Entity Relationship Diagram
+  - ERD → model relațional
+  - Natural vs surrogate keys
+- Demo curs
+  - Pornind de la cerințe pentru un magazin online
+  - Construire ERD
+  - Transformare în tabele PostgreSQL
+- Laborator
+  - Proiectarea propriului ERD
+  - CREATE TABLE
+  - PK/FK
+  - NOT NULL, UNIQUE, CHECK
+  - Testarea constraint-urilor cu date valide/invalide
+Săptămâna 3 — PostgreSQL: SQL fundamentals
+- Curs
+  - DDL vs DML
+  - SELECT
+  - WHERE
+  - Operatorii SQL
+  - NULL
+  - Three-valued logic
+  - ORDER BY
+  - LIMIT
+  - Funcții SQL
+  - CASE
+  - INSERT
+  - UPDATE
+  - DELETE
+  - Ordinea logică a unui query
+- Demo curs
+  - Construirea progresivă a unui query pornind de la o cerință business
+  - Efectul NULL asupra query-urilor
+- Laborator
+  - Import dataset
+  - CRUD
+  - Query-uri progresive
+  - Filtrare și sortare
+  - Funcții
+  - Probleme bazate pe cerințe business
+Săptămâna 4 — PostgreSQL: SQL avansat
+- Curs
+  - INNER JOIN
+  - LEFT/RIGHT/FULL JOIN
+  - CROSS JOIN
+  - Self joins
+  - GROUP BY
+  - Funcții agregate
+  - HAVING
+  - Subqueries
+  - Correlated subqueries
+  - CTE
+  - Window functions
+  - ROW_NUMBER, RANK, LAG, LEAD
+- Demo curs
+  - Construirea live a unui raport de vânzări
+  - JOIN → GROUP BY → CTE → Window Function
+- Laborator
+  - Query-uri multi-table
+  - Rapoarte
+  - Agregări
+  - Subqueries și CTE
+  - Ranking
+  - Probleme de analiză a datelor
+Săptămâna 5 — Database design & normalizare
+- Curs
+  - De ce apare redundanța
+  - Insert anomaly
+  - Update anomaly
+  - Delete anomaly
+  - Functional dependencies
+  - 1NF
+  - 2NF
+  - 3NF
+  - BCNF — introducere
+  - Normalizare vs denormalizare
+  - Trade-offs
+  - Greșeli comune de modelare
+- Demo curs
+  - Tabel mare, prost proiectat
+  - Identificarea anomaliilor
+  - Normalizare pas cu pas până la 3NF
+- Laborator
+  - Dataset CSV denormalizat
+  - Identificarea entităților
+  - Normalizare
+  - ERD
+  - Crearea schemei
+  - Importul datelor
+Săptămâna 6 — PostgreSQL: indexuri și performanță
+- Curs
+  - Cum sunt stocate datele
+  - Pages / blocks
+  - Sequential Scan
+  - Ce este un index
+  - B-tree
+  - Index Scan
+  - Selectivity
+  - Cardinality
+  - Query planner
+  - Statistics
+  - Cost estimation
+  - Composite indexes
+  - Ordinea coloanelor într-un index
+  - Partial indexes
+  - Costul indexurilor la INSERT/UPDATE/DELETE
+  - EXPLAIN vs EXPLAIN ANALYZE
+- Demo curs
+  - Tabel cu 1M+ rows
+  - Query lent
+  - EXPLAIN ANALYZE
+  - Creare index
+  - Compararea planului și timpului
+- Laborator
+  - Primesc o DB cu probleme de performanță
+  - Identifică query-uri lente
+  - Analizează execution plans
+  - Aleg indexurile
+  - Măsoară before/after
+  - Justifică optimizările
+Săptămâna 7 — PostgreSQL: tranzacții și concurență
+- Curs
+  - Tranzacții
+  - BEGIN, COMMIT, ROLLBACK
+  - ACID în detaliu
+  - Concurrency
+  - Dirty reads
+  - Non-repeatable reads
+  - Phantom reads
+  - Lost updates
+  - Isolation levels
+  - Locks
+  - Blocking
+  - Deadlocks
+  - MVCC
+  - De ce PostgreSQL folosește MVCC
+- Demo curs
+  - Două sesiuni psql
+  - Tranzacții concurente
+  - Blocking
+  - Provocarea intenționată a unui deadlock
+  - Schimbarea isolation level
+- Laborator
+  - Lucru în perechi
+  - Reproducerea problemelor de concurență
+  - Locks
+  - Deadlocks
+  - Isolation levels
+  - Analiza comportamentului PostgreSQL
+Săptămâna 8 — MongoDB: document databases
+- Curs
+  - De ce a apărut NoSQL
+  - Document databases
+  - BSON vs JSON
+  - Documents
+  - Collections
+  - _id / ObjectId
+  - Nested documents
+  - Arrays
+  - Schema flexibility
+  - Embedding vs referencing
+  - Aggregate-oriented design
+  - Model relațional vs document model
+  - Când MongoDB este potrivit
+  - Când MongoDB nu este potrivit
+- Demo curs
+  - Modelul PostgreSQL din săptămâna 2
+  - Remodelarea unei părți în MongoDB
+  - Embedded documents vs references
+- Laborator
+  - Import JSON
+  - CRUD
+  - Nested documents
+  - Arrays
+  - Query operators
+  - Proiectarea unei colecții MongoDB
+Săptămâna 9 — MongoDB: aggregation & performance
+- Curs
+  - MongoDB query model
+  - Indexuri MongoDB
+  - Compound indexes
+  - explain
+  - Aggregation Pipeline
+  - $match
+  - $project
+  - $group
+  - $sort
+  - $unwind
+  - $lookup
+  - Pipeline optimization
+  - Tranzacții MongoDB
+  - SQL JOIN vs $lookup
+- Demo curs
+  - Construirea unui pipeline live
+  - Adăugarea stage-urilor unul câte unul
+  - Index + explain
+- Laborator
+  - Aggregation pipelines
+  - Analize pe dataset real
+  - $lookup
+  - Indexuri
+  - Analiza performanței
+  - Optimizarea pipeline-urilor
+Săptămâna 10 — Redis: data structures & caching
+- Curs
+  - Ce este Redis
+  - In-memory database
+  - Latency RAM vs disk
+  - Key-value model
+  - Strings
+  - Hashes
+  - Lists
+  - Sets
+  - Sorted Sets
+  - TTL
+  - Atomic operations
+  - Persistence: RDB și AOF
+  - Eviction policies
+  - Redis ca DB vs Redis ca cache
+- Demo curs
+  - Query PostgreSQL fără cache
+  - Cache în Redis
+  - Cache hit / cache miss
+  - TTL
+  - Compararea latenței
+- Laborator
+  - Redis CLI
+  - Data structures
+  - TTL
+  - Cache pentru PostgreSQL
+  - Implementarea cache-aside
+  - Măsurarea performanței
+Săptămâna 11 — Redis: pattern-uri reale
+- Curs
+  - Cache-aside
+  - Cache invalidation
+  - Stale data
+  - Cache stampede
+  - Session storage
+  - Counters
+  - Leaderboards
+  - Rate limiting
+  - Pub/Sub
+  - Redis Streams
+  - Distributed locks — concept și probleme
+  - Când Redis nu trebuie folosit
+- Demo curs
+  - Implementarea unui rate limiter
+  - Sau leaderboard cu Sorted Sets
+  - Vizualizarea TTL/counterelor live
+- Laborator
+  - Session store
+  - Rate limiter
+  - Leaderboard
+  - Pub/Sub sau Streams
+  - Testare concurentă
+Săptămâna 12 — InfluxDB: time-series databases
+- Curs
+  - Ce sunt datele time-series
+  - Exemple: IoT, monitoring, finance, telemetry
+  - De ce sunt speciale
+  - Timestamp
+  - Measurements
+  - Tags
+  - Fields
+  - Cardinality
+  - Ingestion
+  - Time windows
+  - Aggregări temporale
+  - Retention
+  - Downsampling
+  - PostgreSQL vs InfluxDB pentru time-series
+- Demo curs
+  - Generator simplu de metrici
+  - Scriere continuă în InfluxDB
+  - Query pe ultimele minute
+  - Agregare pe ferestre temporale
+- Laborator
+  - Generare date senzori/metrici
+  - Ingestion în InfluxDB
+  - Query-uri temporale
+  - Aggregations
+  - Windowing
+  - Retention
+Săptămâna 13 — Scalability, distributed databases & observability
+- Curs
+  - Vertical scaling
+  - Horizontal scaling
+  - Replication
+  - Primary/replica
+  - Partitioning
+  - Sharding
+  - Consistency
+  - Availability
+  - Network partitions
+  - CAP theorem
+  - Eventual consistency
+  - Failure scenarios
+  - Backup & recovery
+  - Observability și rolul time-series DB
+- Demo curs
+  - Aplicație/generator care produce metrici
+  - InfluxDB + Grafana
+  - Dashboard live
+  - Simularea unui spike de trafic/latency
+- Laborator
+  - InfluxDB + Grafana
+  - Construirea dashboard-ului
+  - CPU / memory / requests / latency
+  - Agregări
+  - Simularea unui incident
+  - Identificarea problemei din metrici
+Săptămâna 14 — Polyglot persistence & arhitectura finală
+- Curs
+  - Recapitulare PostgreSQL
+  - Recapitulare MongoDB
+  - Recapitulare Redis
+  - Recapitulare InfluxDB
+  - Cum alegem baza de date
+  - Data model vs workload
+  - Consistency requirements
+  - Latency requirements
+  - Scalability
+  - Durability
+  - Cost
+  - SQL vs document vs key-value vs time-series
+  - Polyglot persistence
+  - Anti-pattern: „folosim X pentru că este mai rapid”
+  - Failure modes
+  - Arhitectura unei aplicații reale
+- Demo curs
+  - Primești o aplicație nouă
+  - Pentru fiecare tip de date decizi live: PostgreSQL / MongoDB / Redis / InfluxDB
+  - Desenezi arhitectura finală
+  - Discuți trade-off-urile cu studenții
+- Laborator
+  - Integrarea componentelor
+  - PostgreSQL → date tranzacționale
+  - MongoDB → documente/date flexibile
+  - Redis → cache/date volatile
+  - InfluxDB → telemetry/time-series
+  - Demo proiect
+  - Prezentarea și justificarea arhitecturii
