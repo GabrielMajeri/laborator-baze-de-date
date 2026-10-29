@@ -8,9 +8,11 @@
 
 Pe lângă interogarea tabelelor în mod individual, adevărata putere a limbajului SQL este că permite combinarea înregistrărilor din mai multe tabele pentru a extrage informații. De exemplu, putem găsi toți roboții care au în componență senzori produși de o anumită firmă, putem ordona studenții după media anuală la o anumită materie, putem obține o listă cu drone etc.
 
-În acest laborator vom folosi o bază de date care modelează o rețea de stații de monitorizare a mediului: [`environmental_stations.sql`](data/environmental_stations.sql). Creați o bază de date nouă (de exemplu, `environmental_stations`) și încărcați în ea structura și datele din fișier.
+Pentru a face acest lucru, putem folosi [sub-interogări](https://www.postgresql.org/docs/current/functions-subquery.html) (_subqueries_), cum am făcut și în laboratorul precedent, sau putem face [îmbinări](https://www.postgresql.org/docs/current/functions-subquery.html) (_joins_). În spate, optimizatorul de query-uri SQL va alege cea mai eficientă variantă de calculare a rezultatului.
 
 ### Structura bazei de date și relațiile _many-to-many_
+
+În acest laborator vom folosi o bază de date care modelează o rețea de stații de monitorizare a mediului, [`environmental_stations.sql`](data/environmental_stations.sql). Creați o bază de date nouă (de exemplu, `lab4`) și încărcați în ea structura și datele din fișier.
 
 Dacă analizați tabelele din [`environmental_stations.sql`](data/environmental_stations.sql), veți observa că schema este împărțită în șase tabele:
 
@@ -20,6 +22,8 @@ Dacă analizați tabelele din [`environmental_stations.sql`](data/environmental_
 - `station_sensors`: tabel de legătură care indică în ce stație este instalat fiecare senzor;
 - `sensor_variables`: tabel de legătură care indică ce variabile poate măsura fiecare senzor (de exemplu, un senzor meteo integrat poate măsura atât temperatura, cât și presiunea și umiditatea);
 - `measurements`: măsurătorile propriu-zise, identificate prin senzor, variabilă și momentul de timp (`timestamp`).
+
+Diagrama de mai jos oferă o perspectivă vizuală asupra schemei bazei de date:
 
 ```mermaid
 erDiagram
@@ -85,18 +89,22 @@ Din punct de vedere matematic, operația de bază prin care combinăm două rela
 În SQL, produsul cartezian poate fi obținut folosind `CROSS JOIN` (sau enumerând tabelele cu virgulă în clauza `FROM`):
 
 ```sql
-SELECT st.name AS station_name, v.name AS variable_name, v.unit
+SELECT
+  st.name AS station_name,
+  v.name AS variable_name,
+  v.unit AS variable_unit
 FROM stations AS st
 CROSS JOIN variables AS v;
+-- echivalent cu FROM stations AS st, variables as v
 ```
 
-Deoarece avem $6$ stații și $6$ variabile, această interogare va returna $6 \times 6 = 36$ de rânduri, generând toate combinațiile posibile (util, de exemplu, dacă vrem să generăm un tabel gol cu toate combinațiile stație–variabilă).
+Deoarece avem $6$ stații și $6$ variabile, această interogare va returna $6 \times 6 = 36$ de rânduri, generând toate combinațiile posibile (util, de exemplu, dacă vrem să generăm un tabel gol cu toate combinațiile stație&ndash;variabilă).
 
 În majoritatea cazurilor însă, nu ne interesează toate perechile posibile, ci doar acele perechi de rânduri care au legătură între ele (de exemplu, acele perechi în care cheia străină dintr-un tabel este egală cu cheia primară din celălalt tabel).
 
 ## Tipurile de `JOIN`
 
-O clauză [`JOIN`](https://www.postgresql.org/docs/current/queries-table-expressions.html#QUERIES-FROM) poate fi privită drept un produs cartezian urmat de o filtrare pe baza unei condiții de asociere specificate după cuvântul-cheie `ON`. În funcție de cum sunt tratate rândurile care **nu** au niciun corespondent în celălalt tabel, avem patru tipuri principale de `JOIN`.
+O clauză [`JOIN`](https://www.postgresql.org/docs/current/tutorial-join.html) poate fi privită drept un produs cartezian urmat de o filtrare pe baza unei condiții de asociere specificate după cuvântul-cheie `ON`. În funcție de cum sunt tratate rândurile care **nu** au niciun corespondent în celălalt tabel, avem patru tipuri principale de `JOIN`.
 
 ```mermaid
 flowchart TD
@@ -109,7 +117,7 @@ flowchart TD
 
 ### Inner join
 
-`INNER JOIN` (sau, mai simplu, `JOIN` — cuvântul `INNER` este opțional) păstrează în rezultat **doar perechile de rânduri care satisfac condiția din `ON`**. Dacă un rând din primul tabel nu are niciun corespondent în al doilea tabel (sau invers), acesta este omis din rezultat.
+Comanda `INNER JOIN` (sau, mai simplu, `JOIN` — cuvântul `INNER` este opțional) păstrează în rezultat **doar _perechile_ de rânduri care satisfac condiția din `ON`**. Dacă un rând din primul tabel nu are niciun corespondent în al doilea tabel (sau invers), acesta este omis din rezultat.
 
 De exemplu, pentru a afișa fiecare măsurătoare împreună cu denumirea variabilei și unitatea de măsură corespunzătoare:
 
@@ -214,7 +222,7 @@ ORDER BY st.name NULLS LAST, s.serial_number;
 
 Dacă vrem să afișăm **doar** anomaliile sau elementele neasociate din ambele părți (stații fără senzori și senzori fără stație), putem adăuga `WHERE st.id IS NULL OR s.id IS NULL`.
 
-## Operații pe mulțimi: reuniune și intersecție
+## Operații pe mulțimi de rezultate
 
 În timp ce `JOIN` combină tabelele „pe orizontală” (adăugând coloane din mai multe tabele pe același rând), operațiile pe mulțimi combină rezultatele a două sau mai multe interogări `SELECT` „pe verticală” (adăugând sau filtrând rânduri).
 
@@ -282,7 +290,7 @@ SELECT DISTINCT sensor_id FROM measurements;
 
 ## Limitarea rezultatelor întoarse
 
-Atunci când lucrăm cu tabele care conțin mii sau milioane de măsurători, rareori dorim să transferăm toate rândurile către aplicația client. Putem restricționa numărul maxim de rânduri returnate folosind clauza [`LIMIT`](https://www.postgresql.org/docs/current/queries-limit.html):
+Atunci când lucrăm cu tabele care conțin mii sau milioane de măsurători, rareori dorim să transferăm toate rândurile către aplicația client. Putem restricționa numărul maxim de rânduri returnate folosind clauza [`LIMIT`](https://www.postgresql.org/docs/current/queries-limit.html) (pe care am mai folosit-o și în laboratorul precedent):
 
 ```sql
 SELECT sensor_id, variable_id, timestamp, value
@@ -306,7 +314,7 @@ FETCH FIRST 5 ROWS ONLY;
 
 ## Sărirea peste rezultate
 
-Pentru a implementa **paginarea** rezultatelor (de exemplu, afișarea rezultatelor câte 5 pe pagină într-o interfață web sau într-un raport), combinăm `LIMIT` cu clauza `OFFSET`, care îi indică bazei de date să sară peste primele $k$ rânduri din rezultatul ordonat:
+Pentru a implementa **paginarea** rezultatelor (de exemplu, afișarea rezultatelor câte 5 pe pagină într-o interfață web sau într-un raport), combinăm [`LIMIT` cu clauza `OFFSET`](https://www.postgresql.org/docs/current/queries-limit.html), care îi indică bazei de date să sară peste primele $k$ rânduri din rezultatul ordonat:
 
 ```sql
 -- Pagina 1 (rândurile 1..5):
@@ -338,9 +346,9 @@ LIMIT 5 OFFSET 10;
 
 ## Exerciții
 
-1. Creați o bază de date nouă și încărcați în ea fișierul [`environmental_stations.sql`](data/environmental_stations.sql). Analizați tabelele create și constrângerile de tip cheie primară și cheie străină.
+1. Creați o bază de date nouă și încărcați în ea fișierul [`environmental_stations.sql`](data/environmental_stations.sql). Analizați tabelele create și constrângerile de tip cheie primară și cheie străină (de exemplu, folosiți opțiunea de _View diagrams_ din DataGrip).
 
-2. Folosind `INNER JOIN`, afișați toate măsurătorile din tabelul `measurements`, incluzând în rezultat: momentul de timp (`timestamp`), seria senzorului (`serial_number`), numele variabilei măsurate (`name`), valoarea măsurată (`value`) și unitatea de măsură (`unit`). Ordonați rezultatele cronologic.
+2. Folosind `INNER JOIN`, afișați toate măsurătorile din tabelul `measurements`, incluzând în rezultat: momentul de timp (`timestamp`), seria senzorului (`serial_number`), numele variabilei măsurate (`name`), valoarea măsurată (`value`) și unitatea de măsură (`unit`). Ordonați rezultatele **cronologic**.
 
 3. Afișați o listă cu toate măsurătorile de **temperatură**, care să conțină: numele stației în care a fost făcută măsurătoarea, seria senzorului, momentul de timp și valoarea temperaturii.
 
