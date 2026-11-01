@@ -260,16 +260,8 @@ WHERE sensor_id = 3 AND raw_value < 0;
 După verificare, putem șterge rândurile:
 
 ```sql
-BEGIN;
-
 DELETE FROM measurements
 WHERE sensor_id = 3 AND raw_value < 0;
-
--- Verificați rezultatul înainte de a confirma:
-SELECT * FROM measurements WHERE sensor_id = 3;
-
-COMMIT;
--- Dacă rezultatul nu este cel dorit, folosiți ROLLBACK în loc de COMMIT.
 ```
 
 Pentru o modificare în locul ștergerii folosim `UPDATE`:
@@ -351,9 +343,9 @@ O copie de siguranță este utilă numai dacă am verificat și faptul că poate
 
 5. Ce se întâmplă dacă încercați să introduceți în baza de date o măsurătoare cu `uncertainty` negativ? (e.g. cu `uncertainty = -1`)
 
-6. Afișați toate măsurătorile cu valoare brută lipsă.
+6. Afișați toate măsurătorile cu valoare brută lipsă (hint: valorile lipsă sunt indicate prin `NULL`).
 
-7. Afișați pentru fiecare senzor codul și numărul de măsurători asociate. Includeți și senzorii care nu au nicio măsurătoare.
+7. Afișați pentru fiecare senzor codul și numărul de măsurători asociate. Includeți și senzorii care nu au nicio măsurătoare (hint: putem folosi o sub-interogare).
 
 8. Afișați primii trei senzori, în ordine descrescătoare după data instalării lor. Folosiți `LIMIT` și asigurați un criteriu secundar de ordonare pentru cazul unor date egale.
 

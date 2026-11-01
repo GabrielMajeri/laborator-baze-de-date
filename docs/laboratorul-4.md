@@ -2,7 +2,7 @@
 
 !!! abstract "Obiective"
 
-    Să învățăm cum putem îmbina datele din mai multe tabele diferite folosind comanda `JOIN`. Să înțelegem care sunt principalele tipuri de `JOIN`-uri (_inner join_, _left/right outer join_, _full outer join_) în analogie cu noțiunea de produs cartezian. Să vedem cum putem reuni sau intersecta diferite seturi de rezultate și cum putem pagina rezultatele folosind `LIMIT` și `OFFSET`.
+    Să învățăm cum putem îmbina datele din mai multe tabele diferite folosind comanda `JOIN`. Să înțelegem care sunt principalele tipuri de `JOIN`-uri (_inner join_, _left/right outer join_, _full outer join_) în analogie cu noțiunea de produs cartezian. Să vedem cum putem reuni sau intersecta diferite seturi de rezultate și cum putem structura interogări complexe folosind clauza `WITH` (_Common Table Expressions_).
 
 ## Utilizarea mai multor tabele în aceeași interogare
 
@@ -288,61 +288,87 @@ SELECT DISTINCT sensor_id FROM measurements;
 
     Clauza `ORDER BY` se pune o singură dată, la **sfârșitul întregii expresii** (`UNION` / `INTERSECT` / `EXCEPT`), și ordonează rezultatul final combinat.
 
-## Limitarea rezultatelor întoarse
+## Expresii de tabel comune (_CTEs_) și clauza `WITH`
 
-Atunci când lucrăm cu tabele care conțin mii sau milioane de măsurători, rareori dorim să transferăm toate rândurile către aplicația client. Putem restricționa numărul maxim de rânduri returnate folosind clauza [`LIMIT`](https://www.postgresql.org/docs/current/queries-limit.html) (pe care am mai folosit-o și în laboratorul precedent):
+Pe măsură ce interogările devin mai complexe — combinând mai multe `JOIN`-uri, agregări (`GROUP BY`) și sub-interogări — codul SQL poate deveni greu de citit și de întreținut. Clauza [`WITH`](https://www.postgresql.org/docs/current/queries-with.html) ne permite să definim una sau mai multe **expresii de tabel comune** (_Common Table Expressions_ sau, pe scurt, _CTEs_): tabele temporare, cu nume, care există doar pe durata execuției acelei interogări.
 
-```sql
-SELECT sensor_id, variable_id, timestamp, value
-FROM measurements
-ORDER BY timestamp DESC, sensor_id ASC
-LIMIT 5;
-```
-
-!!! warning "Folosiți întotdeauna `ORDER BY` împreună cu `LIMIT`"
-
-    Fără o clauză `ORDER BY`, ordinea în care baza de date returnează rândurile este nedeterministă (depinde de cum sunt stocate paginile pe disc și de planul de execuție ales). `LIMIT 5` fără `ORDER BY` nu înseamnă „primele 5 rânduri introduse”, ci „oricare 5 rânduri”. Totodată, atunci când mai multe rânduri pot avea aceeași valoare pe prima coloană de sortare (de exemplu, același `timestamp`), adăugați o a doua coloană de departajare (cum ar fi cheia primară) pentru ca ordinea să fie complet deterministă.
-
-Standardul SQL definește și o sintaxă alternativă, echivalentă cu `LIMIT`, pe care PostgreSQL o suportă de asemenea:
+Putem privi o expresie `WITH` ca pe definirea unor variabile sau funcții ajutătoare într-un limbaj de programare uzual, pe care le folosim apoi în interogarea principală. Sintaxa generală este:
 
 ```sql
-SELECT sensor_id, variable_id, timestamp, value
-FROM measurements
-ORDER BY timestamp DESC, sensor_id ASC
-FETCH FIRST 5 ROWS ONLY;
+WITH nume_tabel_temporar AS (
+    SELECT ...
+)
+SELECT ...
+FROM nume_tabel_temporar;
 ```
 
-## Sărirea peste rezultate
+### De ce să folosim `WITH` în loc de sub-interogări?
 
-Pentru a implementa **paginarea** rezultatelor (de exemplu, afișarea rezultatelor câte 5 pe pagină într-o interfață web sau într-un raport), combinăm [`LIMIT` cu clauza `OFFSET`](https://www.postgresql.org/docs/current/queries-limit.html), care îi indică bazei de date să sară peste primele $k$ rânduri din rezultatul ordonat:
+- **Lizibilitate și modularitate**: în loc să îngropăm o sub-interogare în interiorul altei interogări (ceea ce ne obligă să citim codul „dinspre interior spre exterior”), `WITH` ne permite să scriem logica pas cu pas, de sus în jos.
+- **Reutilizare**: dacă avem nevoie de același rezultat intermediar în mai multe locuri din interogarea principală, îl definim o singură dată în blocul `WITH` și îl referim ori de câte ori este nevoie.
+
+### Exemple de utilizare
+
+**1. Compararea fiecărei măsurători cu media senzorului respectiv** — Să presupunem că vrem să afișăm fiecare măsurătoare alături de valoarea medie înregistrată de acel senzor pentru acea variabilă, precum și abaterea față de medie. Putem calcula mai întâi mediile într-un CTE numit `sensor_averages`, iar apoi să facem `JOIN` cu tabelul `measurements`:
 
 ```sql
--- Pagina 1 (rândurile 1..5):
-SELECT sensor_id, variable_id, timestamp, value
-FROM measurements
-ORDER BY timestamp DESC, sensor_id ASC, variable_id ASC
-LIMIT 5 OFFSET 0;
-
--- Pagina 2 (rândurile 6..10):
-SELECT sensor_id, variable_id, timestamp, value
-FROM measurements
-ORDER BY timestamp DESC, sensor_id ASC, variable_id ASC
-LIMIT 5 OFFSET 5;
-
--- Pagina 3 (rândurile 11..15):
-SELECT sensor_id, variable_id, timestamp, value
-FROM measurements
-ORDER BY timestamp DESC, sensor_id ASC, variable_id ASC
-LIMIT 5 OFFSET 10;
+WITH sensor_averages AS (
+    SELECT
+        sensor_id,
+        variable_id,
+        AVG(value) AS avg_value
+    FROM measurements
+    GROUP BY sensor_id, variable_id
+)
+SELECT
+    s.serial_number,
+    v.name AS variable_name,
+    m.timestamp,
+    m.value,
+    sa.avg_value,
+    (m.value - sa.avg_value) AS deviation
+FROM measurements AS m
+INNER JOIN sensor_averages AS sa
+    ON m.sensor_id = sa.sensor_id
+   AND m.variable_id = sa.variable_id
+INNER JOIN sensors AS s ON m.sensor_id = s.id
+INNER JOIN variables AS v ON m.variable_id = v.id
+ORDER BY s.serial_number, m.timestamp;
 ```
 
-În general, pentru pagina $p$ (numerotată de la $1$) cu câte $N$ elemente pe pagină, folosim `LIMIT N OFFSET (p - 1) * N`.
+**2. Înlănțuirea mai multor CTE-uri** — Putem defini mai multe tabele temporare în aceeași clauză `WITH`, separându-le prin virgulă (cuvântul-cheie `WITH` se scrie o singură dată, la început). Un CTE ulterior poate chiar să refere un CTE definit mai sus.
 
-`OFFSET` este util și atunci când vrem, de exemplu, să găsim a doua sau a treia cea mai mare valoare dintr-un tabel (sărind peste primul rezultat cu `OFFSET 1 LIMIT 1`).
+De exemplu, pentru a construi un rezumat al fiecărei stații care să combine numărul de senzori instalați cu numărul total de măsurători înregistrate:
 
-!!! note "Performanța `OFFSET` pe seturi mari de date"
+```sql
+WITH sensors_per_station AS (
+    SELECT
+        station_id,
+        COUNT(sensor_id) AS sensor_count
+    FROM station_sensors
+    GROUP BY station_id
+),
+measurements_per_station AS (
+    SELECT
+        ss.station_id,
+        COUNT(*) AS measurement_count
+    FROM station_sensors AS ss
+    INNER JOIN measurements AS m ON ss.sensor_id = m.sensor_id
+    GROUP BY ss.station_id
+)
+SELECT
+    st.name AS station_name,
+    COALESCE(sps.sensor_count, 0) AS sensors_installed,
+    COALESCE(mps.measurement_count, 0) AS total_measurements
+FROM stations AS st
+LEFT JOIN sensors_per_station AS sps ON st.id = sps.station_id
+LEFT JOIN measurements_per_station AS mps ON st.id = mps.station_id
+ORDER BY total_measurements DESC, st.name;
+```
 
-    Atunci când folosim `OFFSET 100000`, serverul PostgreSQL trebuie totuși să parcurgă și să ordoneze primele $100\,000$ de rânduri înainte de a le ignora. Pentru tabele foarte mari, în practică se preferă paginarea bazată pe cursor / condiție `WHERE` pe ultima valoare văzută (de exemplu, `WHERE timestamp < '2026-03-01 09:00:00' ORDER BY timestamp DESC LIMIT 5`).
+!!! tip "Utilizare avansată a clauzei `WITH`"
+
+    În PostgreSQL, clauza `WITH` nu este limitată doar la interogări `SELECT` — poate fi folosită și împreună cu `INSERT`, `UPDATE` sau `DELETE` pentru a prelucra seturi de rânduri în mai mulți pași. De asemenea, varianta `WITH RECURSIVE` permite scrierea de interogări recursive (utile pentru parcurgerea structurilor arborescente sau a grafurilor direct în SQL).
 
 ## Exerciții
 
@@ -369,8 +395,6 @@ LIMIT 5 OFFSET 10;
 
 10. Folosind `EXCEPT`, găsiți perechile `(sensor_id, variable_id)` declarate în `sensor_variables` (ce poate măsura un senzor) pentru care **nu** există încă nicio măsurătoare înregistrată în tabelul `measurements`. Afișați și seria senzorului și numele variabilei.
 
-11. Afișați cele mai recente 4 măsurători de calitate excelentă (`quality = 2`), ordonate descrescător după `timestamp` (și după `sensor_id` în caz de egalitate). Apoi, folosind `OFFSET`, afișați următoarele 4 măsurători (pagina a doua).
+11. Folosind clauza `WITH` (_Common Table Expression_), calculați mai întâi valoarea medie măsurată pentru fiecare variabilă (`variable_id`), iar în interogarea principală afișați toate măsurătorile care au o valoare **strict mai mare** decât media variabilei respective (incluzând seria senzorului, numele variabilei, momentul de timp, valoarea măsurată și media variabilei).
 
-12. Afișați a doua cea mai mare valoare de temperatură înregistrată în baza de date, împreună cu numele stației și momentul de timp la care a fost măsurată, folosind `ORDER BY`, `LIMIT` și `OFFSET`.
-
-13. Încercați să rezolvați [exercițiile din categoria _Joins and Subqueries_](https://pgexercises.com/questions/joins/) de pe site-ul [PostgreSQL Exercises](https://pgexercises.com/).
+12. Încercați să rezolvați [exercițiile din categoria _Joins and Subqueries_](https://pgexercises.com/questions/joins/) de pe site-ul [PostgreSQL Exercises](https://pgexercises.com/).
