@@ -351,7 +351,7 @@ O copie de siguranță este utilă numai dacă am verificat și faptul că poate
 
 9. Creați o interogare care să afișeze codul, tipul de senzor și rata de eșantionare în Hz pentru toți senzorii _necalibrați_, ordonați de la cea mai mare rată de eșantionare până la cea mai mică.
 
-10. Senzorul termic a avut o eroare și a înregistrat la un moment dat și valori nefizice (o temperatură sub 0 K). Verificați mai întâi rândurile cu un `SELECT`, apoi folosiți `DELETE` cu o clauză `WHERE` pentru a le șterge. Executați operația într-o tranzacție și confirmați-o cu `COMMIT` sau anulați-o cu `ROLLBACK`.
+10. Senzorul termic a avut o eroare și a înregistrat la un moment dat și valori nefizice (o temperatură sub 0 K). Verificați mai întâi rândurile cu un `SELECT`, apoi folosiți `DELETE` cu o clauză `WHERE` pentru a le șterge.
 
 11. Afișați senzorii care au cel puțin două măsurători folosind `GROUP BY` și `HAVING`.
 
