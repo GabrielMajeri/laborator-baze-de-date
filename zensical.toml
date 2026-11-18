@@ -16,6 +16,7 @@ nav = [
   { "Laboratorul 2" = "laboratorul-2.md" },
   { "Laboratorul 3" = "laboratorul-3.md" },
   { "Laboratorul 4" = "laboratorul-4.md" },
+  { "Laboratorul 5" = "laboratorul-5.md" },
 ]
 
 extra_javascript = [
